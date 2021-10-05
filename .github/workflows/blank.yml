@@ -13,4 +13,7 @@ jobs:
         run: |
           curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
           unzip dsi_studio_mac.zip
-      
+      - name: Download Data
+        run: |
+          curl -sSLO https://www.dropbox.com/s/kz88gt5vrpi0dvr/100206.src.gz
+          dsi_studio.app/Content/MacOs/dsi_studio --action=src --source=*.src.gz
