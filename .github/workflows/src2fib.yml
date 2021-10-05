@@ -1,0 +1,50 @@
+name: SRC to FIB
+
+on: 
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Input Archive: An unique ID to retrive SRC files'
+        required: true
+        default: 'mysrc'
+      file:
+        description: 'Input Files: select files to be processed'
+        required: true
+        default: '*.src.gz'  
+      output:
+        description: 'Output Archive: An unique ID to save output FIB files'
+        required: true
+        default: 'myfib'    
+jobs:
+  atk:
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
+          unzip dsi_studio_mac.zip
+          echo "$PWD/dsi_studio.app/Contents/MacOS/" >> $GITHUB_PATH
+          
+      - name: Download SRC
+        uses: actions/download-artifact@v2.0.10
+        with:
+          name: ${{ github.event.inputs.name }}
+          path: data
+    
+      - name: SRC to FIB
+        run: |
+          cd data
+          ls -l
+          sudo dsi_studio --action=rec --source=${{ github.event.inputs.file }}
+          
+      - name: Upload FIB Files
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ github.event.inputs.output }}
+          path: data
+          if-no-files-found: error
+          retention-days: 90
+          
+      
