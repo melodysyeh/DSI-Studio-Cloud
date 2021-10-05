@@ -21,7 +21,7 @@ jobs:
           unzip onedeath-master.zip
           cd onedeath-master
           sudo apt-get install -y wget lua5.3
-          lua main.lua "${{ github.event.inputs.name }}"
+          lua main.lua ${{ github.event.inputs.name }}
           ls -l
           
       - name: Save SRC to Archive
