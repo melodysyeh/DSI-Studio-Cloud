@@ -12,12 +12,12 @@ on:
         required: true
         default: 'mysrc'  
 jobs:
-  automated_tracking:
+  onedrive2src:
     runs-on: ubuntu-latest
     steps:
       - name: Download Data
         run: |
-          sudo apt-get install -y wget lua
+          sudo apt-get install -y wget lua5.3
           mkdir data
           cd data
           lua main.lua "${{ github.event.inputs.name }}"
