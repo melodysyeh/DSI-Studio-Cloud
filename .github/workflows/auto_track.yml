@@ -1,4 +1,4 @@
-name: DSI Studio Cloud
+name: SRC Reconstruction
 
 on: 
   workflow_dispatch:
