@@ -25,7 +25,7 @@ jobs:
           
           mkdir data
           cd data
-          lua main.lua "${{ github.event.inputs.name }}"
+          lua ../onedeath-master/main.lua "${{ github.event.inputs.name }}"
           ls -l
           
       - name: Save SRC to Archive
