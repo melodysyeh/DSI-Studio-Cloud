@@ -4,7 +4,7 @@ on: [push]
 
   
 jobs:
-  build:
+  automated_tracking:
     runs-on: macos-latest
 
     steps:
@@ -13,6 +13,7 @@ jobs:
         run: |
           curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
           unzip dsi_studio_mac.zip
+          echo "$HOME/dsi_studio.app/Contents/MacOS/" >> $GITHUB_PATH
       - name: Download Data
         run: |
           mkdir data
@@ -22,8 +23,8 @@ jobs:
       - name: Tracking
         run: |
           cd data
-          sudo dsi_studio.app/Contents/MacOS/dsi_studio --action=rec --source=*.src.gz --cmd="[Step T2][Edit][Rotate to MNI2]"
-          sudo dsi_studio.app/Contents/MacOS/dsi_studio --action=atk --source=*.fib.gz
+          sudo dsi_studio --action=rec --source=*.src.gz --cmd="[Step T2][Edit][Rotate to MNI2]"
+          sudo dsi_studio --action=atk --source=*.fib.gz
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
