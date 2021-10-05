@@ -23,6 +23,7 @@ jobs:
       - name: Tracking
         run: |
           cd data
+          ls -l
           sudo dsi_studio --action=rec --source=*.src.gz --cmd="[Step T2][Edit][Rotate to MNI2]"
           sudo dsi_studio --action=atk --source=*.fib.gz
           
