@@ -1,0 +1,32 @@
+name: (0) One Drive to SRC
+
+on: 
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'One Drive Shared Folder of SRC Files'
+        required: true
+        default: 'https://pitt-my.sharepoint.com/:f:/g/personal/yehfc_pitt_edu/EmEs7GztOl1InBsGv0wEv0QBbhrqG3hzIX4dOUTkk__v9Q?e=EIKnTy'
+      output:
+        description: 'Output Archive: An unique ID to save SRC files'
+        required: true
+        default: 'mysrc'  
+jobs:
+  automated_tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Data
+        run: |
+          sudo apt-get install -y wget lua
+          mkdir data
+          cd data
+          lua main.lua "${{ github.event.inputs.name }}"
+          ls -l
+          
+      - name: Save SRC to Archive
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ github.event.inputs.output }}
+          path: data
+          if-no-files-found: error
+          retention-days: 90
