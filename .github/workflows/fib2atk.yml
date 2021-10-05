@@ -1,4 +1,4 @@
-name: FIB Auto Tracking
+name: (1) FIB To Tractography - automated fiber tracking
 
 on: 
   workflow_dispatch:
