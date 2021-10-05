@@ -24,7 +24,7 @@ jobs:
       - name: Save SRC to Archive
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ${{ github.event.inputs.name }}
+          name: ${{ github.event.inputs.output }}
           path: data
           if-no-files-found: error
           retention-days: 90
