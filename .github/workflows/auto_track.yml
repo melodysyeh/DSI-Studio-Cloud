@@ -1,7 +1,12 @@
 name: DSI Studio Cloud
 
-on: [push]
-
+on: 
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'SRC file url'
+        required: true
+        default: 'https://www.dropbox.com/s/kz88gt5vrpi0dvr/100206.src.gz'
   
 jobs:
   automated_tracking:
@@ -18,13 +23,13 @@ jobs:
         run: |
           mkdir data
           cd data
-          curl -sSLO https://www.dropbox.com/s/kz88gt5vrpi0dvr/100206.src.gz
+          curl -sSLO "${{ github.event.inputs.name }}"
           cd ..
       - name: Tracking
         run: |
           cd data
           ls -l
-          sudo dsi_studio --action=rec --source=100206.src.gz --cmd="[Step T2][Edit][Rotate to MNI2]"
+          sudo dsi_studio --action=rec --source=*.src.gz --cmd="[Step T2][Edit][Rotate to MNI2]"
           sudo dsi_studio --action=atk --source=*.fib.gz
           
       - name: Upload a Build Artifact
