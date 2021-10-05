@@ -13,8 +13,7 @@ jobs:
         run: |
           curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
           unzip dsi_studio_mac.zip
-          echo "$PWD/dsi_studio.app/Contents/MacOS/"
-          echo $GITHUB_PATH
+          echo "$PWD/dsi_studio.app/Contents/MacOS/" >> $GITHUB_PATH
       - name: Download Data
         run: |
           mkdir data
