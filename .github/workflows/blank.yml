@@ -1,0 +1,16 @@
+name: DSI Studio Cloud
+
+on: [push]
+
+  
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
+          unzip dsi_studio_mac.zip
+      
