@@ -17,10 +17,14 @@ jobs:
     steps:
       - name: Download Data
         run: |
+          curl -sSLO https://gitlab.com/VADemon/onedeath/-/archive/master/onedeath-master.zip
+          unzip onedeath-master.zip
+          
           sudo apt-get install -y wget lua5.3
+          
           mkdir data
           cd data
-          lua main.lua "${{ github.event.inputs.name }}"
+          lua ../onedeath-master/main.lua "${{ github.event.inputs.name }}"
           ls -l
           
       - name: Save SRC to Archive
