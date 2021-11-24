@@ -13,8 +13,14 @@ on:
         default: 'mysrc'  
 jobs:
   automated_tracking:
-    runs-on: macos-latest
+    runs-on: windows-2019
     steps:
+      - uses: suisei-cn/actions-download-file@v1
+        id: downloadfile  # Remember to give an ID if you need the output
+        name: Download the file
+        with:
+          url: "https://indy.fulgan.com/SSL/openssl-1.0.2u-x64_86-win64.zip"
+          
       - name: Download Data
         run: |
           mkdir data
