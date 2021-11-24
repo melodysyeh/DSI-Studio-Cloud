@@ -20,7 +20,11 @@ jobs:
         name: Download the file
         with:
           url: "https://indy.fulgan.com/SSL/openssl-1.0.2u-x64_86-win64.zip"
-          
+      - name: Extract some files
+        run: |
+          dir
+          7z x openssl-1.0.2u-x64_86-win64.zip
+      
       - name: Download Data
         run: |
           mkdir data
