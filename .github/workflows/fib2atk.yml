@@ -17,15 +17,15 @@ on:
         default: 'myatk'    
 jobs:
   atk:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Download DSI Studio
         run: |
-          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.10.05/dsi_studio_mac.zip
-          unzip dsi_studio_mac.zip
-          echo "$PWD/dsi_studio.app/Contents/MacOS/" >> $GITHUB_PATH
+          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip -o dsi-studio.zip
+          unzip dsi-studio
+          echo "$PWD/dsi-studio/" >> $GITHUB_PATH
           
       - name: Download FIB
         uses: actions/download-artifact@v2.0.10
@@ -35,9 +35,7 @@ jobs:
     
       - name: Tracking
         run: |
-          cd data
-          ls -l
-          sudo dsi_studio --action=atk --source=${{ github.event.inputs.file }}
+          dsi_studio --action=atk --source=${{ github.event.inputs.file }}
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
