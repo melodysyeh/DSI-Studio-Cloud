@@ -16,11 +16,9 @@ jobs:
     steps:
       - name: Download DSI Studio and FIB file
         run: |
-          echo "Download Files"
-          echo "::add-mask::${{ github.event.inputs.fib_url }}"
-          curl -sSLO ${{ github.event.inputs.fib_url }}
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
-          unzip *.zip
+          curl -sSLO ${{ github.event.inputs.fib_url }}
+          unzip -q *.zip
           rm *.zip
           chmod 777 ./dsi-studio/dsi_studio
       - name: Tracking
