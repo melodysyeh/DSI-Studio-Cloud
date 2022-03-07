@@ -14,13 +14,12 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Download FIB
-        run: | 
-          curl -sSLO ${{ github.event.inputs.fib_url }}
-          ls * -l
-      - name: Download DSI Studio
+      - name: Download DSI Studio and FIB file
         run: |
-          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x          
+          curl -sSLO ${{ github.event.inputs.fib_url }}
+          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
+          unzip *.zip
+          rm *.zip
           chmod 777 ./dsi-studio/dsi_studio
       - name: Tracking
         run: |
