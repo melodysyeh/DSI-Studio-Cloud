@@ -17,19 +17,15 @@ jobs:
       - name: Download FIB
         run: | 
           curl -sSLO ${{ github.event.inputs.fib_url }}
-          mkdir fib
-          mv *.fib.gz fib
       - name: Tracking
         run: |
-          ./dsi-studio/dsi_studio --action=ana --source=./fib/*.fib.gz --atlas=HCP-MMP
+          ./dsi-studio/dsi_studio --action=ana --source=*.fib.gz --atlas=HCP-MMP
           
       - name: Cache
         uses: actions/cache@v2.1.7
         with:
-          path: |
-            fib
-            dsi_studio
-          key: fib_results
+          path: ./*.fib.*
+          key: ${{ github.event.inputs.fib_url }}
     
   automated_tracking:
     needs: registration
@@ -39,17 +35,18 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
+      - name: Download DSI Studio
+        run: |
+          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x          
+          chmod 777 ./dsi-studio/dsi_studio
       - name: Cache
         uses: actions/cache@v2.1.7
         with:
-          path: |
-            fib
-            dsi_studio
-          key: fib_results
+          path: ./*.fib.*
+          key: ${{ github.event.inputs.fib_url }}
       - name: Tracking
         run: |
-          ls * -l
-          ./dsi_studio/dsi_studio --action=atk --source=./fib/*.fib.gz --track_id=${{ matrix.tracts }}
+          ./dsi_studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
