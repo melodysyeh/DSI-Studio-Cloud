@@ -7,15 +7,9 @@ on:
         description: 'URL to the fib file'
         required: true
 jobs:
-  automated_tracking:
-    strategy:
-      matrix:
-        tracts: [Arcuate,Cingulum_Frontal,Cingulum_Par,Aslant,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus,Uncinate,Vertical,Corticospinal,Corticostriatal,Thalamic,Fornix,Optic_Radiation,Corpus_Callosum]
-      fail-fast: false
+  registration:
     runs-on: ubuntu-latest
-
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Download DSI Studio
         run: |
           curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip | jar x          
@@ -23,9 +17,38 @@ jobs:
       - name: Download FIB
         run: | 
           curl -sSLO ${{ github.event.inputs.fib_url }}
+          mkdir fib
+          mv *.fib.gz fib
       - name: Tracking
         run: |
-          dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          ./dsi-studio/dsi_studio --action=ana --source=./fib/*.fib.gz --atlas=HCP-MMP
+          
+      - name: Cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: |
+            fib
+            dsi_studio
+          key: fib_results
+    
+  automated_tracking:
+    needs: registration
+    strategy:
+      matrix:
+        tracts: [Arcuate,Cingulum_Frontal,Cingulum_Par,Aslant,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus,Uncinate,Vertical,Corticospinal,Corticostriatal,Thalamic,Fornix,Optic_Radiation,Corpus_Callosum]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: |
+            fib
+            dsi_studio
+          key: fib_results
+      - name: Tracking
+        run: |
+          ./dsi_studio/dsi_studio --action=atk --source=./fib/*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
