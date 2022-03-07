@@ -48,6 +48,7 @@ jobs:
           key: fib_results
       - name: Tracking
         run: |
+          ls * -l
           ./dsi_studio/dsi_studio --action=atk --source=./fib/*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
