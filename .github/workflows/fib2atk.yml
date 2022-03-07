@@ -42,10 +42,12 @@ jobs:
           key: ${{ github.event.inputs.fib_url }}
       - name: Download DSI Studio
         run: |
+          ls * -l
           curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x          
           chmod 777 ./dsi-studio/dsi_studio
       - name: Tracking
         run: |
+          ls * -l
           ./dsi_studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
