@@ -4,6 +4,8 @@ This repository runs DSI Studio's atuomated tracking using Github Action, which 
 
 **The data will be publicly accessibile by everyone. Do not use this to process patient or sensitive data.**
 
+The process take **FIB file** as the input data [(steps to generate a FIB file from NIFTI or DICOM files)](https://dsi-studio.labsolver.org/doc/gui_t1.html)
+
 ## Steps
 
 1. Fork the repository: Click on the `Fork` button in the upper right corner.
