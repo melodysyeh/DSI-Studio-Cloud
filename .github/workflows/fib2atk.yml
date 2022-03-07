@@ -1,46 +1,35 @@
-name: (1) FIB To Tractography - automated fiber tracking
+name: Automated fiber tracking
 
 on: 
   workflow_dispatch:
     inputs:
-      name:
-        description: 'Input Archive: An unique ID to retrive FIB files'
+      fib_url:
+        description: 'URL to the fib file'
         required: true
-        default: 'myfib'
-      file:
-        description: 'FIB File Name'
-        required: true
-        default: '*.fib.gz'  
-      output:
-        description: 'Output Archive: An unique ID to save tractography files'
-        required: true
-        default: 'myatk'    
 jobs:
-  atk:
+  automated_tracking:
+    strategy:
+      matrix:
+        tracts: [Arcuate,Cingulum_Frontal,Cingulum_Par,Aslant,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus,Uncinate,Vertical,Corticospinal,Corticostriatal,Thalamic,Fornix,Optic_Radiation,Corpus_Callosum]
+      fail-fast: false
     runs-on: ubuntu-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Download DSI Studio
         run: |
-          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip -o dsi-studio.zip
-          unzip dsi-studio
-          echo "$PWD/dsi-studio/" >> $GITHUB_PATH
-          
+          curl -sSLO https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip | jar x          
+          chmod 777 ./dsi-studio/dsi_studio
       - name: Download FIB
-        uses: actions/download-artifact@v2.0.10
-        with:
-          name: ${{ github.event.inputs.name }}
-          path: data
-    
+        run: | 
+          curl -sSLO ${{ github.event.inputs.fib_url }}
       - name: Tracking
         run: |
-          dsi_studio --action=atk --source=${{ github.event.inputs.file }}
-          
+          dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ${{ github.event.inputs.output }}
-          path: data
+          name: tractography
+          path: ./**/*.tt.gz
           if-no-files-found: error
           retention-days: 90
