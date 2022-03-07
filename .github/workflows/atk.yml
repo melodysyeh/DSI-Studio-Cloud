@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Download DSI Studio and FIB file
         run: |
-          echo "::add-mask::${{ github.event.inputs.fib_url }}"
+          echo "Download Files"
           curl -sSLO ${{ github.event.inputs.fib_url }}
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
           unzip *.zip
@@ -25,10 +25,11 @@ jobs:
       - name: Tracking
         run: |
           ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          mv ./**/*.tt.gz .
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: tractography
-          path: ./**/*.tt.gz
+          path: *.tt.gz
           if-no-files-found: error
           retention-days: 90
