@@ -6,49 +6,25 @@ on:
       fib_url:
         description: 'URL to the fib file'
         required: true
-jobs:
-  registration:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download DSI Studio
-        run: |
-          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x          
-          chmod 777 ./dsi-studio/dsi_studio
-      - name: Download FIB
-        run: | 
-          curl -sSLO ${{ github.event.inputs.fib_url }}
-      - name: Tracking
-        run: |
-          ./dsi-studio/dsi_studio --action=ana --source=*.fib.gz --atlas=HCP-MMP
-          
-      - name: Cache
-        uses: actions/cache@v2.1.7
-        with:
-          path: ./*.fib.*
-          key: ${{ github.event.inputs.fib_url }}
-    
+jobs:    
   automated_tracking:
-    needs: registration
     strategy:
       matrix:
         tracts: [Arcuate,Cingulum_Frontal,Cingulum_Par,Aslant,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus,Uncinate,Vertical,Corticospinal,Corticostriatal,Thalamic,Fornix,Optic_Radiation,Corpus_Callosum]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Cache
-        uses: actions/cache@v2.1.7
-        with:
-          path: ./*.fib.*
-          key: ${{ github.event.inputs.fib_url }}
+      - name: Download FIB
+        run: | 
+          curl -sSLO ${{ github.event.inputs.fib_url }}
+          ls * -l
       - name: Download DSI Studio
         run: |
-          ls * -l
           curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x          
           chmod 777 ./dsi-studio/dsi_studio
       - name: Tracking
         run: |
-          ls * -l
-          ./dsi_studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
