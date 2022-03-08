@@ -1,4 +1,4 @@
-# DSI Studio Auto-Track on GitHub
+# DSI Studio on GitHub Cloud Computing
 
 This repository runs DSI Studio's atuomated tracking using Github Action, which offers 20 concurrent jobs with 2-core CPU each, equivalent to a 40-core workstation. 
 
