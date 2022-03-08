@@ -11,12 +11,12 @@ on:
         type: boolean
         required: true
         default: 'false'
-        description: Specify whether to save *.src.gz file
+        description: Save SRC Files
       skip_atk:
         type: boolean
         required: true
         default: 'false'
-        description: Specify whether to skip automatic tracking
+        description: Skip Automatic Tracking (Only Output SRC and FIB)
         
 jobs:    
   openneuro_download:
