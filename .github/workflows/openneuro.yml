@@ -13,11 +13,8 @@ jobs:
     steps:
       - name: Download OpenNeuro
         run: |
-          mkdir ${{ github.event.inputs.id }}
-          cd ${{ github.event.inputs.id }}
-          aws s3 sync --no-sign-request s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}-download/
-          ls * -l
-              
+          aws s3 sync --no-sign-request s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
+          ls * -l    
       - name: Download DSI Studio and FIB file
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_1804.zip"  
