@@ -16,7 +16,6 @@ jobs:
           mkdir ${{ github.event.inputs.id }}
           cd ${{ github.event.inputs.id }}
           aws s3 sync --no-sign-request s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}-download/
-          find . -type f ! -name "sub*" -exec rm -rf {} \;
           ls * -l
               
       - name: Download DSI Studio and FIB file
