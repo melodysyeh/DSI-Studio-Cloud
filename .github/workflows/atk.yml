@@ -1,4 +1,4 @@
-name: Automated fiber tracking
+name: Automated Tracking (URL)
 
 on: 
   workflow_dispatch:
