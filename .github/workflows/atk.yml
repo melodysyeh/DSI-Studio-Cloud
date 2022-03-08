@@ -1,4 +1,4 @@
-name: Automated Tracking (URL)
+name: Automatic Tracking (URL)
 
 on: 
   workflow_dispatch:
