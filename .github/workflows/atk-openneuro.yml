@@ -7,6 +7,17 @@ on:
         description: 'OpenNeuro ID'
         default: ds001021
         required: true
+      save_src:
+        type: boolean
+        required: true
+        default: 'false'
+        description: Specify whether to save *.src.gz file
+      skip_atk:
+        type: boolean
+        required: true
+        default: 'false'
+        description: Specify whether to skip automatic tracking
+        
 jobs:    
   openneuro_download:
     runs-on: ubuntu-18.04
@@ -17,7 +28,7 @@ jobs:
           ls * -l    
       - name: Download DSI Studio
         run: |
-          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" | jar x
+          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_1804.zip" | jar x
           chmod 777 ./dsi-studio/dsi_studio
       - name: Create SRC Files
         run: |
@@ -26,6 +37,7 @@ jobs:
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --save_src=*.src.gz
       - name: Upload SRC files
         uses: actions/upload-artifact@v2.2.4
+        if: ${{ github.event.inputs.save_src == 'true' }}
         with:
           name: src files
           path: ./*.src.gz
@@ -44,6 +56,7 @@ jobs:
           retention-days: 90
   automated_tracking:
     needs: openneuro_download
+    if: ${{ github.event.inputs.skip_atk == 'false' }}
     strategy:
       matrix:
         tracts: [Arcuate_Fasciculus_L,Arcuate_Fasciculus_R,Cingulum_Frontal,Cingulum_Par,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus1,Superior_Longitudinal_Fasciculus2,Superior_Longitudinal_Fasciculus3,"Uncinate,Vertical,Fornix,Aslant",Corticospinal,Corticostriatal_Tract_Anterior,Thalamic_Radiation_Anterior,Optic_Radiation_L,Optic_Radiation_R,Corpus_Callosum_Forceps_Minor,Corpus_Callosum_Body,Corpus_Callosum_Forceps_Major]
