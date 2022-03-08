@@ -13,7 +13,7 @@ The process takes a **FIB file** as the input data [(steps to generate a FIB fil
 <img src="https://user-images.githubusercontent.com/275569/157118034-8a28b553-fa86-4a5c-a542-b65b36793c63.png" width=400>
 
 2. Click on the `Actions` menu and confirm `I understand my workflows, go ahead and enable them`. Now you have the automated fiber tracking enabled.
-3. Under the same `Actions` menu, click on `Automated fiber tracking` on the left and click run `workflow` on the right.
+3. Under the same `Actions` menu, click on `Auto-Track (URL)` on the left and click run `workflow` on the right.
 
 <img src="https://user-images.githubusercontent.com/275569/157118122-cca1dc7f-4767-43f7-b450-f73744ca3934.png" width=400>
 
