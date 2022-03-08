@@ -23,7 +23,7 @@ jobs:
           chmod 777 ./dsi-studio/dsi_studio
       - name: Create SRC Files
         run: |
-          ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }} --recursive=1
+          ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
           mv ./**/*.src.gz .
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
           ls -l *
