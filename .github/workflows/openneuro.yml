@@ -1,4 +1,4 @@
-name: Automatic Tracking (OpenNeuro)(TESTING)
+name: (TESTING) Auto-Track (OpenNeuro)
 
 on: 
   workflow_dispatch:
