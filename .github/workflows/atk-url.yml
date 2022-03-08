@@ -10,7 +10,7 @@ jobs:
   automated_tracking:
     strategy:
       matrix:
-        tracts: [Arcuate_Fasciculus_L,Arcuate_Fasciculus_R,Cingulum_Frontal,Cingulum_Par,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus1,Superior_Longitudinal_Fasciculus2,"Superior_Longitudinal_Fasciculus3,Uncinate,Vertical,Fornix,Aslant,Corticospinal,Corticostriatal_Tract_Anterior",Corticostriatal_Tract_Posterior,Corticostriatal_Tract_Superior,Thalamic_Radiation_Anterior,Thalamic_Radiation_Posterior,Thalamic_Radiation_Superior_L,Thalamic_Radiation_Superior_R,Optic_Radiation_L,Optic_Radiation_R,Corpus_Callosum_Forceps_Minor,Corpus_Callosum_Body,Corpus_Callosum_Forceps_Major]
+        tracts: [Arcuate_Fasciculus_L,Arcuate_Fasciculus_R,Cingulum_Frontal,Cingulum_Par,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus1,Superior_Longitudinal_Fasciculus2,Superior_Longitudinal_Fasciculus3,"Uncinate,Vertical,Fornix,Aslant",Corticospinal,Corticostriatal_Tract_Anterior,Thalamic_Radiation_Anterior,Optic_Radiation_L,Optic_Radiation_R,Corpus_Callosum_Forceps_Minor,Corpus_Callosum_Body,Corpus_Callosum_Forceps_Major]
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
