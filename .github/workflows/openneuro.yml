@@ -13,19 +13,24 @@ jobs:
     steps:
       - name: Download OpenNeuro
         run: |
+          mkdir ${{ github.event.inputs.id }}
+          cd ${{ github.event.inputs.id }}
           aws s3 sync --no-sign-request s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}-download/
+          find . -type f ! -name "sub*" -exec rm -rf {} \;
           ls * -l
+              
       - name: Download DSI Studio and FIB file
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
           unzip -q *.zip
           rm *.zip
           chmod 777 ./dsi-studio/dsi_studio
-      - name: Tracking
+      - name: Create SRC Files
         run: |
-          ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
-          mv ./**/*.tt.gz .
-          mv ./**/*.stat.txt .
+          ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
+          mv ./**/*.src.gz .
+          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
+          ls -l *
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
