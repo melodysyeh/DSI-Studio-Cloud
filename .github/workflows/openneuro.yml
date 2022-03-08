@@ -1,0 +1,37 @@
+name: Download From OpenNeuro (TESTING)
+
+on: 
+  workflow_dispatch:
+    inputs:
+      id:
+        description: 'OpenNeuro ID'
+        default: ds001021
+        required: true
+jobs:    
+  automated_tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download OpenNeuro
+        run: |
+          aws s3 sync --no-sign-request s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}-download/
+          ls * -l
+      - name: Download DSI Studio and FIB file
+        run: |
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
+          unzip -q *.zip
+          rm *.zip
+          chmod 777 ./dsi-studio/dsi_studio
+      - name: Tracking
+        run: |
+          ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          mv ./**/*.tt.gz .
+          mv ./**/*.stat.txt .
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: tractography
+          path: |
+            ./*.tt.gz 
+            ./*.stat.txt 
+          if-no-files-found: error
+          retention-days: 90
