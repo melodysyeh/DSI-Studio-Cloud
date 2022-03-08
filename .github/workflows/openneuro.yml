@@ -1,4 +1,4 @@
-name: Download From OpenNeuro (TESTING)
+name: Automatic Tracking (OpenNeuro)(TESTING)
 
 on: 
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         default: ds001021
         required: true
 jobs:    
-  automated_tracking:
+  openneuro_download:
     runs-on: ubuntu-18.04
     steps:
       - name: Download OpenNeuro
@@ -25,8 +25,56 @@ jobs:
         run: |
           ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
           mv ./**/*.src.gz .
+      - name: Upload SRC files
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: src files
+          path: |
+            ./*.src.gz
+          if-no-files-found: error
+          retention-days: 90
+      - name: Create FIB Files
+        run: |          
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
           ls -l *
+      - name: Upload FIB files
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: fib files
+          path: |
+            ./*.fib.gz
+          if-no-files-found: error
+          retention-days: 90
+      - name: Cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: ./*.fib.gz
+          key: ${{ github.event.inputs.id }}
+
+  automated_tracking:
+    needs: openneuro_download
+    strategy:
+      matrix:
+        tracts: [Arcuate_Fasciculus_L,Arcuate_Fasciculus_R,Cingulum_Frontal,Cingulum_Par,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus1,Superior_Longitudinal_Fasciculus2,"Superior_Longitudinal_Fasciculus3,Uncinate,Vertical,Fornix,Aslant,Corticospinal,Corticostriatal_Tract_Anterior",Corticostriatal_Tract_Posterior,Corticostriatal_Tract_Superior,Thalamic_Radiation_Anterior,Thalamic_Radiation_Posterior,Thalamic_Radiation_Superior_L,Thalamic_Radiation_Superior_R,Optic_Radiation_L,Optic_Radiation_R,Corpus_Callosum_Forceps_Minor,Corpus_Callosum_Body,Corpus_Callosum_Forceps_Major]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: ./*.fib.gz
+          key: ${{ github.event.inputs.id }}
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
+          unzip -q *.zip
+          rm *.zip
+          chmod 777 ./dsi-studio/dsi_studio
+      - name: Tracking
+        run: |
+          ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          mv ./**/*.tt.gz .
+          mv ./**/*.stat.txt .
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
