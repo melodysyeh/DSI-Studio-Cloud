@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Download OpenNeuro
         run: |
-          aws s3 sync --no-sign-request --exclude '*' --include '**/**/dwi' s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
-          aws s3 sync --no-sign-request --exclude '*' --include '**/dwi' s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
+          aws s3 sync --no-sign-request --exclude '*' --include '*/*/dwi' s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
+          aws s3 sync --no-sign-request --exclude '*' --include '*/dwi' s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
           ls * -l    
       - name: Download DSI Studio and FIB file
         run: |
