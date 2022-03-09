@@ -16,11 +16,6 @@ on:
         required: true
         default: 'false'
         description: Save SRC Files
-      skip_atk:
-        type: boolean
-        required: true
-        default: 'false'
-        description: Skip Automatic Tracking (Only Output SRC and FIB)
         
 jobs:    
   openneuro_download:
@@ -66,7 +61,6 @@ jobs:
         
   automated_tracking:
     needs: openneuro_download
-    if: ${{ github.event.inputs.skip_atk == 'false' }}
     strategy:
       matrix:
         files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
