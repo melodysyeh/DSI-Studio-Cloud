@@ -39,9 +39,8 @@ jobs:
           chmod 777 ./dsi-studio/dsi_studio
       - name: Create SRC Files
         run: |
-          ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
-          mv ./**/*.src.gz .
-          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --save_src=*.src.gz
+          ./dsi-studio/dsi_studio --action=src --source=./${{ github.event.inputs.id }}/*.nii.gz
+          ./dsi-studio/dsi_studio --action=rec --source=./${{ github.event.inputs.id }}/*.src.gz --save_src=*.src.gz
       - name: Upload SRC files
         uses: actions/upload-artifact@v2.2.4
         if: ${{ github.event.inputs.save_src == 'true' }}
