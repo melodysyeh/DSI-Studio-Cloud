@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         if: ${{ github.event.inputs.save_src == 'true' }}
         with:
-          name: src files
+          name: openneuro_${{ github.event.inputs.id }}_src
           path: ./*.src.gz
           if-no-files-found: error
           retention-days: 90
@@ -53,7 +53,7 @@ jobs:
       - name: Upload FIB files
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: fib files
+          name: openneuro_${{ github.event.inputs.id }}_fib
           path: ./*.fib.gz
           if-no-files-found: error
           retention-days: 90
@@ -70,7 +70,7 @@ jobs:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3.0.0
         with:
-          name: fib files
+          name: openneuro_${{ github.event.inputs.id }}_fib
       - name: Download DSI Studio
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
@@ -85,7 +85,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: tractography
+          name: openneuro_${{ github.event.inputs.id }}_tract
           path: |
             ./*.tt.gz 
             ./*.stat.txt 
