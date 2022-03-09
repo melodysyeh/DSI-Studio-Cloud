@@ -5,7 +5,7 @@ on:
     inputs:
       id:
         description: 'Zenodo Record Number'
-        default: 4757139
+        default: '4757139'
         required: true
       save_src:
         type: boolean
