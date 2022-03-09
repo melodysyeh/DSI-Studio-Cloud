@@ -33,8 +33,8 @@ The process takes a **FIB file** as the input data [(steps to generate a FIB fil
 
 2. Under the `Actions` menu, click on `Auto-Track (OpenNeuro)` on the left and click run `workflow` on the right.
 
-3. Input the OpenNeuro Accession Number (e.g. ds000031) 
-4. Input `Tract of Interest`
+3. Assign `OpenNeuro Accession Number` (e.g. ds000031) 
+4. Assign `Tract of Interest`
 
    Support partial name, and multiple tracts can be assigned using comman separator (e.g. Arcuate,Optic_Radiation).
 
