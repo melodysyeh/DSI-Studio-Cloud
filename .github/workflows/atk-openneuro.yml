@@ -9,7 +9,7 @@ on:
         required: true
       tract:
         description: "Tract of Interests. Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt"
-        default: "Arcuate,Optic_Radiation"
+        default: "Arcuate_Fasciculus_L,Optic_Radiation_L"
         required: true
       save_src:
         type: boolean
