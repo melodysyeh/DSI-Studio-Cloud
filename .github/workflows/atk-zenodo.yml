@@ -1,0 +1,96 @@
+name: Auto-Track (Zenodo)
+
+on: 
+  workflow_dispatch:
+    inputs:
+      id:
+        description: 'Zenodo Record Number'
+        default: 4757139
+        required: true
+      save_src:
+        type: boolean
+        required: true
+        default: 'false'
+        description: Save SRC Files
+      skip_atk:
+        type: boolean
+        required: true
+        default: 'false'
+        description: Skip Automatic Tracking (Only Output SRC and FIB)
+        
+jobs:    
+  openneuro_download:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Download Zenodo
+        run: |
+          file_list=""
+          for file in $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X GET https://zenodo.org/api/records/${{ github.event.inputs.id }} | jq -r '.files |.[]| .filename'); do file_list=$file_list$file; done
+          export ZENODO_FILES=$file_list
+          echo $ZENODO_FILES
+          mkdir ${{ github.event.inputs.id }}
+          cd ${{ github.event.inputs.id }}
+          for i in $ZENODO_FILES; do curl -sLO $BASE_URL/record/${{ github.event.inputs.id }}/files/"$i"; done
+          ls * -l
+          ls 1.txt
+      - name: Download DSI Studio
+        run: |
+          curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_1804.zip" | jar x
+          chmod 777 ./dsi-studio/dsi_studio
+      - name: Create SRC Files
+        run: |
+          ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
+          mv ./**/*.src.gz .
+          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --save_src=*.src.gz
+      - name: Upload SRC files
+        uses: actions/upload-artifact@v2.2.4
+        if: ${{ github.event.inputs.save_src == 'true' }}
+        with:
+          name: src files
+          path: ./*.src.gz
+          if-no-files-found: error
+          retention-days: 90
+      - name: Create FIB Files
+        run: |          
+          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
+          ls -l *
+      - name: Upload FIB files
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: fib files
+          path: ./*.fib.gz
+          if-no-files-found: error
+          retention-days: 90
+  automated_tracking:
+    needs: openneuro_download
+    if: ${{ github.event.inputs.skip_atk == 'false' }}
+    strategy:
+      matrix:
+        tracts: [Arcuate_Fasciculus_L,Arcuate_Fasciculus_R,Cingulum_Frontal,Cingulum_Par,Inferior_Fronto_Occipital_Fasciculus,Inferior_Longitudinal_Fasciculus,Superior_Longitudinal_Fasciculus1,Superior_Longitudinal_Fasciculus2,Superior_Longitudinal_Fasciculus3,"Uncinate,Vertical,Fornix,Aslant",Corticospinal,Corticostriatal_Tract_Anterior,Thalamic_Radiation_Anterior,Optic_Radiation_L,Optic_Radiation_R,Corpus_Callosum_Forceps_Minor,Corpus_Callosum_Body,Corpus_Callosum_Forceps_Major]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: fib files
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
+          unzip -q *.zip
+          rm *.zip
+          chmod 777 ./dsi-studio/dsi_studio
+      - name: Tracking
+        run: |
+          ./dsi-studio/dsi_studio --action=atk --source=*.fib.gz --track_id=${{ matrix.tracts }}
+          mv ./**/*.tt.gz .
+          mv ./**/*.stat.txt .
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: tractography
+          path: |
+            ./*.tt.gz 
+            ./*.stat.txt 
+          if-no-files-found: error
+          retention-days: 90
