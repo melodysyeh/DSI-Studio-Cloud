@@ -32,7 +32,6 @@ jobs:
           cd ${{ github.event.inputs.id }}
           for i in $ZENODO_FILES; do curl -sLO https://zenodo.org/record/${{ github.event.inputs.id }}/files/"$i"; done
           ls * -l
-          ls 1.txt
       - name: Download DSI Studio
         run: |
           curl -sL "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_1804.zip" | jar x
