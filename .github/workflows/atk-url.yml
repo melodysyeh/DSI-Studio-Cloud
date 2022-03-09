@@ -16,8 +16,9 @@ jobs:
     steps:
       - name: Download DSI Studio and FIB file
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
+          echo "Download ${{ github.event.inputs.fib_url }}"
           curl -sSLOf ${{ github.event.inputs.fib_url }}
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"  
           unzip -q *.zip
           rm *.zip
           chmod 777 ./dsi-studio/dsi_studio
