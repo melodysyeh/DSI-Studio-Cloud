@@ -62,7 +62,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
   automated_tracking:
-    needs: openneuro_download
+    needs: download_zenodo
     if: ${{ github.event.inputs.skip_atk == 'false' }}
     strategy:
       matrix:
