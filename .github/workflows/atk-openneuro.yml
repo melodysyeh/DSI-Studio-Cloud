@@ -50,11 +50,8 @@ jobs:
       - name: Create FIB Files
         run: |          
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
-          ls -l *
-          FIB_LIST=${ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]'}
-          echo FIB LIST
-          echo ${FIB_LIST}
-          echo ::set-output name=files::${VERSIONS}
+          FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
+          echo ::set-output name=files::${FIB_LIST}
       - name: Upload FIB files
         uses: actions/upload-artifact@v2.2.4
         with:
