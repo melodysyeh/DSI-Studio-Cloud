@@ -8,7 +8,7 @@ on:
         default: ds001021
         required: true
       tract:
-        description: "Tract of Interests (accept partial name). Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt"
+        description: "Tract of Interests. Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt"
         default: "Arcuate,Optic_Radiation"
         required: true
       save_src:
@@ -25,6 +25,8 @@ on:
 jobs:    
   openneuro_download:
     runs-on: ubuntu-18.04
+    outputs:
+      files: ${{ steps.fib.outputs.files }}
     steps:
       - name: Download OpenNeuro
         run: |
@@ -48,6 +50,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
       - name: Create FIB Files
+        id: fib
         run: |          
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
           FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
@@ -59,8 +62,7 @@ jobs:
           path: ./*.fib.gz
           if-no-files-found: error
           retention-days: 90
-    outputs:
-      files: ${{ steps.generate-matrix.outputs.files }}
+
         
   automated_tracking:
     needs: openneuro_download
