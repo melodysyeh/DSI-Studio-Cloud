@@ -19,7 +19,7 @@ on:
         description: Skip Automatic Tracking (Only Output SRC and FIB)
         
 jobs:    
-  openneuro_download:
+  download_zenodo:
     runs-on: ubuntu-18.04
     steps:
       - name: Download Zenodo
@@ -30,7 +30,7 @@ jobs:
           echo $ZENODO_FILES
           mkdir ${{ github.event.inputs.id }}
           cd ${{ github.event.inputs.id }}
-          for i in $ZENODO_FILES; do curl -sLO $BASE_URL/record/${{ github.event.inputs.id }}/files/"$i"; done
+          for i in $ZENODO_FILES; do curl -sLO https://zenodo.org/record/${{ github.event.inputs.id }}/files/"$i"; done
           ls * -l
           ls 1.txt
       - name: Download DSI Studio
