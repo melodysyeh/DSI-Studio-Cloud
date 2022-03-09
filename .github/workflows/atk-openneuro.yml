@@ -8,7 +8,7 @@ on:
         default: ds001021
         required: true
       tract:
-        description: Tract to map (accept partial name)
+        description: "Tract of Interests (accept partial name). Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt"
         default: "Arcuate,Optic_Radiation"
         required: true
       save_src:
@@ -67,7 +67,7 @@ jobs:
     if: ${{ github.event.inputs.skip_atk == 'false' }}
     strategy:
       matrix:
-        files: ${{ fromJSON(needs.openneuro_download.outputs.files) }}
+        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
