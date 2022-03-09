@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       id:
-        description: 'OpenNeuro ID'
+        description: 'OpenNeuro Accession Number'
         default: ds001021
         required: true
       tract:
