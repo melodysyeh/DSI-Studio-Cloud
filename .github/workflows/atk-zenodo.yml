@@ -30,6 +30,7 @@ jobs:
           echo $ZENODO_FILES
           mkdir ${{ github.event.inputs.id }}
           cd ${{ github.event.inputs.id }}
+          IFS=','
           for i in $ZENODO_FILES; do curl -sLO https://zenodo.org/record/${{ github.event.inputs.id }}/files/"$i"; done
           ls * -l
       - name: Download DSI Studio
