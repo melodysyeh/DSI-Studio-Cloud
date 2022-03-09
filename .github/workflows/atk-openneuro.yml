@@ -79,7 +79,7 @@ jobs:
           chmod 777 ./dsi-studio/dsi_studio
       - name: Tracking
         run: |
-          ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.tracts }} --track_id=${{ github.event.inputs.tract }}
+          ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
       - name: Upload a Build Artifact
