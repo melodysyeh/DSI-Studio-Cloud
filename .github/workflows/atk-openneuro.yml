@@ -35,7 +35,6 @@ jobs:
         run: |
           ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
           mv ./**/*.src.gz .
-          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --save_src=*.src.gz
       - name: Upload SRC files
         uses: actions/upload-artifact@v2.2.4
         if: ${{ github.event.inputs.save_src == 'true' }}
@@ -47,7 +46,7 @@ jobs:
       - name: Create FIB Files
         id: fib
         run: |          
-          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz
+          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --mask=1 --check_btable=0
           FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}
       - name: Upload FIB files
