@@ -118,7 +118,7 @@ CNVIII_R
 
 5. Click on `Run workflow` to start tracking. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
 
-6. Once the process completed, the FIB files and tract files will be saved. They can be downloaded and viewed in DSI Studio.
+6. Once the process completed, the FIB files and tract files will be saved. They can be downloaded and [viewed in DSI Studio](https://dsi-studio.labsolver.org/doc/gui_t3_whole_brain.html).
 
 <img src="https://user-images.githubusercontent.com/275569/157700442-6fae3601-9208-4607-af56-eb4b44d43877.png" width=500>
 
