@@ -116,7 +116,11 @@ CNVIII_L
 CNVIII_R
 ```
 
-5. click on `Run workflow` to start tracking.
+5. Click on `Run workflow` to start tracking. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
+
+6. Once the process completed, the FIB files and tract files will be saved. They can be downloaded and viewed in DSI Studio.
+
+<img src="https://user-images.githubusercontent.com/275569/157700442-6fae3601-9208-4607-af56-eb4b44d43877.png" width=500>
 
 
 
@@ -132,13 +136,9 @@ This process takes a **FIB file** as the input data [(steps to generate a FIB fi
 
 <img src="https://user-images.githubusercontent.com/275569/157307610-5f2e5e9b-ed6f-44e3-b084-6c42f23ac146.png" width=500>
 
-3. Input the URL for the FIB file starting with (e.g.,  https://zenodo.org/record/6307812/files/100206.src.gz.gqi.1.7.fib.gz ) and click on `Run workflow` to start tracking.
+3. **Test the URL on the browser to make sure it downloads a FIB file.** Then input the URL for the FIB file starting with (e.g.,  https://zenodo.org/record/6307812/files/100206.src.gz.gqi.1.7.fib.gz ) and click on `Run workflow` to start tracking. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
 
-**test the URL on the browser to make sure it downloads a FIB file**
-
-4. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
-
-5. The output will be saved under `Artifacts` as a zip file named tractography
+4. Once the process completed, the tract files  will be saved under `Artifacts` as a zip file named tractography
 
 <img src="https://user-images.githubusercontent.com/275569/157118239-969e137a-f103-47ed-a1b9-fe6d134fc2e4.png" width=500>
 
