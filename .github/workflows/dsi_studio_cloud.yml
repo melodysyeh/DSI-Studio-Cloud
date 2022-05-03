@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        neuro_id: ${{ github.event.inputs.id }}
+        neuro_id: ${{ fromjson(github.event.inputs.id) }}
       fail-fast: false
     outputs:
       files: ${{ steps.fib.outputs.files }}
