@@ -8,27 +8,25 @@ on:
         required: true
       save_src:
         type: boolean
-        required: true
         default: 'false'
         description: 'Save SRC Files'
       src_qc:
         type: boolean
-        required: true
         default: 'true'
         description: 'QC report'
       reconstruction:
         type: choice
-        description: 'Reconstruction (GQI: native space, QSDR: mni space)'
+        description: 'Reconstruction'
         options: 
         - GQI
         - QSDR
       tract:
         description: 'AutoTrack'
-        default: ''
+        default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
         required: false
       connectivity:
         description: 'Whole-Brain Connectivity Matrix'
-        default: ''
+        default: 'HCP_MMP,FreeSurferDKT_Cortical'
         required: false
       
 jobs:    
