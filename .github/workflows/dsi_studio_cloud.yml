@@ -99,6 +99,7 @@ jobs:
           path: ./*.fib.gz
           if-no-files-found: error
           retention-days: 90
+          
   pipeline_region_analysis:
     if: ${{ github.event.inputs.region != '' }}
     needs: openneuro_download
@@ -108,16 +109,11 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v3.0.0
+      - name: Download FIB and DSI Studio
+        uses: ./.github/workflows/download_fib
         with:
-          name: openneuro_${{ github.event.inputs.id }}_fib
-      - name: Download DSI Studio
-        run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
-          unzip -q *.zip
-          rm *.zip
-
+          fib_file: openneuro_${{ github.event.inputs.id }}_fib
+          
       - name: Tracking
         run: |
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.region }}
