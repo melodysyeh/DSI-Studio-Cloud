@@ -6,21 +6,26 @@ on:
         description: 'OpenNeuro Accession Number'
         default: ds001021
         required: true
-      reconstruction:
-        type: choice
-        description: Reconstruction Method
-        options: 
-        - GQI
-        - QSDR
-      tract:
-        description: "Tract of Interests. Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt"
-        default: "Arcuate_Fasciculus_L,Optic_Radiation_L"
-        required: true
       save_src:
         type: boolean
         required: true
         default: 'false'
         description: Save SRC Files
+      src_qc:
+        type: boolean
+        required: true
+        default: 'true'
+        description: Generate a quality control report for SRC files
+      reconstruction:
+        type: choice
+        description: 'Reconstruction Method (GQI: native space, QSDR: mni space)'
+        options: 
+        - GQI
+        - QSDR
+      tract:
+        description: 'Tract of Interests. Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt'
+        default: "Arcuate_Fasciculus_L,Optic_Radiation_L"
+        required: false
         
 jobs:    
   openneuro_download:
@@ -41,10 +46,12 @@ jobs:
           ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
           mv ./**/*.src.gz .
       - name: Check SRC Quality
+        if: ${{ github.event.inputs.src_qc == 'true' }}
         run: |
           ./dsi-studio/dsi_studio --action=qc --source=.
       
       - name: Upload SRC QC report
+        if: ${{ github.event.inputs.src_qc == 'true' }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_src_qc
@@ -60,6 +67,7 @@ jobs:
           path: ./*.src.gz
           if-no-files-found: error
           retention-days: 90
+          
       - name: Create FIB Files (GQI)
         if: ${{ github.event.inputs.reconstruction == 'GQI' }}
         run: |          
@@ -87,6 +95,7 @@ jobs:
           retention-days: 90
         
   automated_tracking:
+    if: ${{ github.event.inputs.tract != '' }}
     needs: openneuro_download
     strategy:
       matrix:
