@@ -109,15 +109,15 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Download FIB and DSI Studio
+      - name: Setup Environment
         uses: ./.github/workflows/download_fib
         with:
           fib_file: openneuro_${{ github.event.inputs.id }}_fib
           
-      - name: Tracking
+      - name: Analyzing Regions
         run: |
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.region }}
-          mv ./**/*.txt .
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -136,17 +136,12 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v3.0.0
+      - name: Setup Environment
+        uses: ./.github/workflows/download_fib
         with:
-          name: openneuro_${{ github.event.inputs.id }}_fib
-      - name: Download DSI Studio
-        run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
-          unzip -q *.zip
-          rm *.zip
+          fib_file: openneuro_${{ github.event.inputs.id }}_fib
 
-      - name: Tracking
+      - name: AutoTrack
         run: |
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
@@ -170,21 +165,15 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v3.0.0
+      - name: Setup Environment
+        uses: ./.github/workflows/download_fib
         with:
-          name: openneuro_${{ github.event.inputs.id }}_fib
-      - name: Download DSI Studio
-        run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
-          unzip -q *.zip
-          rm *.zip
-          chmod 777 ./dsi-studio/dsi_studio
+          fib_file: openneuro_${{ github.event.inputs.id }}_fib
+          
       - name: Tracking
         run: |
           ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.connectivity }}
-          mv ./**/*.mat .
-          mv ./**/*.txt .
+          
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
