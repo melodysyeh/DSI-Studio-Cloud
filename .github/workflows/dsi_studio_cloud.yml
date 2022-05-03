@@ -10,23 +10,27 @@ on:
         type: boolean
         required: true
         default: 'false'
-        description: Save SRC Files
+        description: 'Save SRC Files'
       src_qc:
         type: boolean
         required: true
         default: 'true'
-        description: Generate a quality control report for SRC files
+        description: 'QC report'
       reconstruction:
         type: choice
-        description: 'Reconstruction Method (GQI: native space, QSDR: mni space)'
+        description: 'Reconstruction (GQI: native space, QSDR: mni space)'
         options: 
         - GQI
         - QSDR
       tract:
-        description: 'Tract of Interests. Full list at https://github.com/frankyeh/DSI-Studio-atlas/blob/main/ICBM152/ICBM152.tt.gz.txt'
-        default: "Arcuate_Fasciculus_L,Optic_Radiation_L"
+        description: 'AutoTrack'
+        default: ''
         required: false
-        
+      connectivity:
+        description: 'Whole-Brain Connectivity Matrix'
+        default: ''
+        required: false
+      
 jobs:    
   openneuro_download:
     runs-on: ubuntu-18.04
@@ -112,7 +116,7 @@ jobs:
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
           unzip -q *.zip
           rm *.zip
-          chmod 777 ./dsi-studio/dsi_studio
+
       - name: Tracking
         run: |
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
@@ -125,5 +129,39 @@ jobs:
           path: |
             ./*.tt.gz 
             ./*.stat.txt 
+          if-no-files-found: error
+          retention-days: 90
+          
+  connectivity_matrix:
+    if: ${{ github.event.inputs.connectivity != '' }}
+    needs: openneuro_download
+    strategy:
+      matrix:
+        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: openneuro_${{ github.event.inputs.id }}_fib
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
+          unzip -q *.zip
+          rm *.zip
+          chmod 777 ./dsi-studio/dsi_studio
+      - name: Tracking
+        run: |
+          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.connectivity }}
+          mv ./**/*.mat .
+          mv ./**/*.txt .
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: openneuro_${{ github.event.inputs.id }}_connectivity
+          path: |
+            ./*.mat
+            ./*.txt
           if-no-files-found: error
           retention-days: 90
