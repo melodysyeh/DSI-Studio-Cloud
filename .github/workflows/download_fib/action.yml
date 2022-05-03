@@ -14,3 +14,4 @@ runs:
         curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
         unzip -q *.zip
         rm *.zip
+      shell: bash
