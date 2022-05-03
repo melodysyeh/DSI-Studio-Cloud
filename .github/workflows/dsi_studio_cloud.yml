@@ -1,5 +1,4 @@
-name: Auto-Track (OpenNeuro)
-
+name: DSI Studio Cloud
 on: 
   workflow_dispatch:
     inputs:
