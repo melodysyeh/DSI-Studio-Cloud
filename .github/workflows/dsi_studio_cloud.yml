@@ -22,7 +22,7 @@ on:
         - QSDR
       region:
         description: 'Pipeline: Region Analysis'
-        default: 'HCP842_tractography,FreeSurferDKT_Subcortical,'
+        default: 'HCP842_tractography,FreeSurferDKT_Subcortical'
         required: false
       tract:
         description: 'Pipeline: AutoTrack'
