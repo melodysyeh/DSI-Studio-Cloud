@@ -23,7 +23,7 @@ jobs:
     outputs:
       files: ${{ steps.fib.outputs.files }}
     steps:
-      - name: Download OpenNeuro
+      - name: Download ${{ github.event.inputs.id }}
         run: |
           aws s3 sync --no-sign-request --exclude "*" --include "*dwi.*" s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
           ls * -l    
