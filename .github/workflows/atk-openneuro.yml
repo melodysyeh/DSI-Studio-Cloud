@@ -35,6 +35,18 @@ jobs:
         run: |
           ./dsi-studio/dsi_studio --action=src --source=${{ github.event.inputs.id }}
           mv ./**/*.src.gz .
+      - name: Check SRC Quality
+        run: |
+          ./dsi-studio/dsi_studio --action=qc --source=.
+      
+      - name: Upload SRC QC report
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: openneuro_${{ github.event.inputs.id }}_src_qc
+          path: ./qc.txt
+          if-no-files-found: error
+          retention-days: 90
+      
       - name: Upload SRC files
         uses: actions/upload-artifact@v2.2.4
         if: ${{ github.event.inputs.save_src == 'true' }}
