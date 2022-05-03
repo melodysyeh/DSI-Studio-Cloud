@@ -1,25 +1,38 @@
-# DSI Studio on GitHub Cloud Computing
+# DSI Studio Cloud
 
-This repository runs DSI Studio's automated tracking using Github Action, which offers 20 concurrent jobs with a 2-core CPU each, equivalent to a 40-core workstation. 
+<img src="https://user-images.githubusercontent.com/275569/166306915-3253113f-fe69-48bb-91a9-000cf5ae6822.png" width=500>
 
-**The data will be publicly accessible by everyone. Do not use this to process patient or sensitive data.**
+[DSI Studio Cloud](https://github.com/frankyeh/DSI-Studio-Cloud) is a GitHub repository that uses GitHub's cloud computing resource to analyze diffusion MRI data. It can construct tractography and analyze its diffusion and shape metrics. The code can be extended to accomplish any command line functions provided in DSI Studio.
 
+DSI Studio Cloud makes uses of the GitHub-hosted runner, a virtual machine hosted by GitHub, to process dMRI data. The GitHub-Action scripts in the DSI Studio Cloud get data from OpenNeuro to the GitHub runners and processe them using DSI Studio.
 
-## Auto-Track on OpenNeuro 
+## Advantages
 
-1. Fork the repository: Click on the `Fork` button in the upper right corner.
+- **Free computation resources**: GitHub action provides 20 concurrent jobs with 2-core each. The computation power is equal to a 40-core workstation, much faster than running it on most laptops/desktops.
+
+- **Faster data transfer**: The raw dMRI data are usually huge and can be up to several GB per scan, but tractography and related metrics are substantially smaller at MB size. Using DSI Studio Cloud, the amount of data transfer can be dramatically reduced. 
+
+## Requirements 
+
+- dMRI data stored on [OpenNeuro](https://openneuro.org/)
+- A [GitHub](https://github.com/) account (free)
+
+## Limitations
+
+- **Not more than 256 scans data**: There is a maximum of 256 jobs per workflow run. DSI Studio will still generate SRC and FIB files for downloading, but fiber tracking cannot be executed due to the this limit.
+- **90-day data retention**: GitHub will retain workflor data only for 90 days before they are automatically deleted.
+
+## Steps
+
+1. **Fork the repository**: Click on the `Fork` button in the upper right corner.
 
 <img src="https://user-images.githubusercontent.com/275569/157307065-a172c393-a4db-4cf3-92c8-b4482619a0e7.png" width=500>
 
-2. Click on the `Actions` menu and confirm `I understand my workflows, go ahead and enable them`. Now you have automated fiber tracking enabled. Under the same `Actions` menu, click on `Auto-Track (OpenNeuro)` on the left and click run `workflow` on the right.
+2. **Enable Actions**: Click on the `Actions` menu and confirm `I understand my workflows, go ahead and enable them`. 
 
 <img src="https://user-images.githubusercontent.com/275569/157596167-7d9ee687-2633-4d48-ba5f-c12c62b04b35.png" width=500>
 
-3. Assign `OpenNeuro Accession Number` (e.g. ds000031) 
-
-4. Assign `Tract of Interest`
-
-   Support partial name, and multiple tracts can be assigned using comman separator (e.g. Arcuate,Optic_Radiation).
+3. **Run Actions**: Under the same `Actions` menu, click on `Auto-Track (OpenNeuro)` on the left and click run `workflow` on the right. Assign `OpenNeuro Accession Number` (e.g. ds000031) and also `Tract of Interest`, which support partial name, and multiple tracts can be assigned using comman separator (e.g. Arcuate,Optic_Radiation). Click on `Run workflow` to start. 
 
 The full list of tracts supported:
 
@@ -116,31 +129,6 @@ CNVIII_L
 CNVIII_R
 ```
 
-5. Click on `Run workflow` to start tracking. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
-
-6. Once the process completed, the FIB files and tract files will be saved. They can be downloaded and [viewed in DSI Studio](https://dsi-studio.labsolver.org/doc/gui_t3_whole_brain.html).
+4. **Download Results**: Once completed, the intermediate results (e.g. SRC files, FIB files), tract files, and tract metrics can be downloaded. SRC, FIB, TT files  can be [inspected in DSI Studio](https://dsi-studio.labsolver.org/doc/gui_t3_whole_brain.html).
 
 <img src="https://user-images.githubusercontent.com/275569/157700442-6fae3601-9208-4607-af56-eb4b44d43877.png" width=500>
-
-
-
-## Auto-Track using URL
-
-This process takes a **FIB file** as the input data [(steps to generate a FIB file from NIFTI or DICOM files)](https://dsi-studio.labsolver.org/doc/gui_t1.html)
-
-1. Fork the repository: Click on the `Fork` button in the upper right corner.
-
-<img src="https://user-images.githubusercontent.com/275569/157307065-a172c393-a4db-4cf3-92c8-b4482619a0e7.png" width=500>
-
-2. Click on the `Actions` menu and confirm `I understand my workflows, go ahead and enable them`. Now you have automated fiber tracking enabled. Under the same `Actions` menu, click on `Auto-Track (URL)` on the left and click run `workflow` on the right.
-
-<img src="https://user-images.githubusercontent.com/275569/157307610-5f2e5e9b-ed6f-44e3-b084-6c42f23ac146.png" width=500>
-
-3. **Test the URL on the browser to make sure it downloads a FIB file.** Then input the URL for the FIB file starting with (e.g.,  https://zenodo.org/record/6307812/files/100206.src.gz.gqi.1.7.fib.gz ) and click on `Run workflow` to start tracking. The tracking will take a while to start and complete. You can cancel it at any time, and partial results will still be saved.
-
-4. Once the process completed, the tract files  will be saved under `Artifacts` as a zip file named tractography
-
-<img src="https://user-images.githubusercontent.com/275569/157118239-969e137a-f103-47ed-a1b9-fe6d134fc2e4.png" width=500>
-
-
-
