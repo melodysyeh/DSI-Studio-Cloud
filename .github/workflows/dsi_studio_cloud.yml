@@ -8,7 +8,7 @@ on:
         required: true
       reconstruction:
         type: choice
-        description: Reconstruction Method (GQI: native space QSDR: mni space)
+        description: Reconstruction Method
         options: 
         - GQI
         - QSDR
