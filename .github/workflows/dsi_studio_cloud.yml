@@ -36,12 +36,16 @@ on:
 jobs:    
   openneuro_download:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        neuro_id: ${{ github.event.inputs.id }}
+      fail-fast: false
     outputs:
       files: ${{ steps.fib.outputs.files }}
     steps:
-      - name: Download ${{ github.event.inputs.id }}
+      - name: Download Data
         run: |
-          aws s3 sync --no-sign-request --exclude "*" --include "*dwi.*" s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
+          aws s3 sync --no-sign-request --exclude "*" --include "*dwi.*" s3://openneuro.org/${{ matrix.files }} ${{ matrix.files }}
           ls * -l    
       - name: Download DSI Studio
         run: |
