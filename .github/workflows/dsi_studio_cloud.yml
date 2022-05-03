@@ -3,30 +3,34 @@ on:
   workflow_dispatch:
     inputs:
       id:
-        description: 'OpenNeuro Accession Number'
+        description: 'Source: OpenNeuro Accession Number'
         default: ds001021
         required: true
       save_src:
         type: boolean
         default: 'false'
-        description: 'Save SRC Files'
+        description: 'Preprocessing: Save SRC Files'
       src_qc:
         type: boolean
         default: 'true'
-        description: 'QC report'
+        description: 'Preprocessing: QC report'
       reconstruction:
         type: choice
-        description: 'Reconstruction'
+        description: 'Preprocessing: Reconstruction'
         options: 
         - GQI
         - QSDR
+      region:
+        description: 'Pipeline: Region Analysis'
+        default: 'HCP842_tractography,FreeSurferDKT_Subcortical,'
+        required: false
       tract:
-        description: 'AutoTrack'
+        description: 'Pipeline: AutoTrack'
         default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
         required: false
       connectivity:
-        description: 'Whole-Brain Connectivity Matrix'
-        default: 'HCP_MMP,FreeSurferDKT_Cortical'
+        description: 'Pipeline: Connectivity Matrix'
+        default: 'HCP-MMP,FreeSurferDKT_Cortical'
         required: false
       
 jobs:    
@@ -95,8 +99,39 @@ jobs:
           path: ./*.fib.gz
           if-no-files-found: error
           retention-days: 90
+  pipeline_region_analysis:
+    if: ${{ github.event.inputs.region != '' }}
+    needs: openneuro_download
+    strategy:
+      matrix:
+        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: openneuro_${{ github.event.inputs.id }}_fib
+      - name: Download DSI Studio
+        run: |
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip"
+          unzip -q *.zip
+          rm *.zip
+
+      - name: Tracking
+        run: |
+          ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.region }}
+          mv ./**/*.txt .
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: openneuro_${{ github.event.inputs.id }}_region_analysis
+          path: |
+            ./*.txt 
+          if-no-files-found: error
+          retention-days: 90        
         
-  automated_tracking:
+  pipeline_autotrack:
     if: ${{ github.event.inputs.tract != '' }}
     needs: openneuro_download
     strategy:
@@ -123,14 +158,14 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_tract
+          name: openneuro_${{ github.event.inputs.id }}_autotrack
           path: |
             ./*.tt.gz 
             ./*.stat.txt 
           if-no-files-found: error
           retention-days: 90
           
-  connectivity_matrix:
+  pipeline_connectivity_matrix:
     if: ${{ github.event.inputs.connectivity != '' }}
     needs: openneuro_download
     strategy:
@@ -157,7 +192,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_connectivity
+          name: openneuro_${{ github.event.inputs.id }}_connectivity_matrix
           path: |
             ./*.mat
             ./*.txt
