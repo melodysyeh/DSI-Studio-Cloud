@@ -36,7 +36,7 @@ on:
         required: false
       
 jobs:    
-  openneuro_download:
+  src_rec:
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.fib.outputs.files }}
@@ -94,7 +94,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           
-  pipeline_region_analysis:
+  ana:
     if: ${{ github.event.inputs.region_analysis == 'true' }}
     needs: openneuro_download
     strategy:
@@ -123,7 +123,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90        
         
-  pipeline_autotrack:
+  atk:
     if: ${{ github.event.inputs.autotrack == 'true' }}
     needs: openneuro_download
     strategy:
@@ -154,7 +154,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           
-  pipeline_connectivity_matrix:
+  trk:
     if: ${{ github.event.inputs.connectivity_matrix == 'true' }}
     needs: openneuro_download
     strategy:
