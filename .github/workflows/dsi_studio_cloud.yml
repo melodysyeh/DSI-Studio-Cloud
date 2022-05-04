@@ -36,7 +36,7 @@ on:
         required: false
       
 jobs:    
-  src_rec:
+  rec:
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.fib.outputs.files }}
@@ -96,10 +96,10 @@ jobs:
           
   ana:
     if: ${{ github.event.inputs.region_analysis == 'true' }}
-    needs: openneuro_download
+    needs: rec
     strategy:
       matrix:
-        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
+        files: ${{ fromjson(needs.rec.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -125,10 +125,10 @@ jobs:
         
   atk:
     if: ${{ github.event.inputs.autotrack == 'true' }}
-    needs: openneuro_download
+    needs: rec
     strategy:
       matrix:
-        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
+        files: ${{ fromjson(needs.rec.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -156,10 +156,10 @@ jobs:
           
   trk:
     if: ${{ github.event.inputs.connectivity_matrix == 'true' }}
-    needs: openneuro_download
+    needs: rec
     strategy:
       matrix:
-        files: ${{ fromjson(needs.openneuro_download.outputs.files) }}
+        files: ${{ fromjson(needs.rec.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
