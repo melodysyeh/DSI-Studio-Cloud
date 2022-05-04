@@ -82,7 +82,7 @@ jobs:
           retention-days: 90
 
 
-  preprocessing:
+  eddy_correction:
     needs: download_data
     strategy:
       matrix:
@@ -124,7 +124,7 @@ jobs:
           retention-days: 90        
 
   reconstruction:
-    needs: preprocessing
+    needs: eddy_correction
     runs-on: ubuntu-latest
     outputs:
       files: ${{ steps.fib.outputs.files }}
