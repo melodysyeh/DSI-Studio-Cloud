@@ -53,35 +53,19 @@ jobs:
           FIB_LIST=$(ls *.src.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}    
       
-      - name: Upload SRC QC report
+      - name: Save QC report
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_quality_check_raw_data
-          path: ./qc.txt
-          if-no-files-found: error
-          retention-days: 90
+          path: qc.txt
 
-      - name: Upload SRC files for Eddy
-        if: ${{ github.event.inputs.eddy == 'true' }}
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: ${{ github.event.inputs.id }}_raw_src
-          path: ./*.src.gz
-          if-no-files-found: error
-          retention-days: 90
-
-      - name: Upload SRC files Skipping Eddy
-        if: ${{ github.event.inputs.eddy == 'false'}}
+      - name: Save SRC files
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_src
-          path: ./*.src.gz
-          if-no-files-found: error
-          retention-days: 90
+          path: ~/*.src.gz
 
-
-  eddy_correction:
-    if: ${{ github.event.inputs.eddy == 'true'}}
+  preprocessing:
     needs: download_data
     strategy:
       matrix:
@@ -90,13 +74,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download DSI Studio
+        if: ${{ github.event.inputs.eddy == 'true' }}
         run: curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
       - name: Download Raw SRC
+        if: ${{ github.event.inputs.eddy == 'true' }}
         uses: actions/download-artifact@v3.0.0
         with:
-          name: ${{ github.event.inputs.id }}_raw_src
+          name: ${{ github.event.inputs.id }}_src
           path: ${{ matrix.files }}
-      - name: Setup and run Eddy
+      - name: Eddy Correction
+        if: ${{ github.event.inputs.eddy == 'true' }}
         run: |
           curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt --exclude='fsl/doc' --exclude='fsl/refdoc' --exclude='fsl/python/oxford_asl' --exclude='fsl/data/possum' --exclude='fsl/data/first' --exclude='fsl/data/mist' --exclude='fsl/data/atlases' --exclude='fsl/data/xtract_data' --exclude='fsl/extras/doc' --exclude='fsl/extras/man' --exclude='fsl/extras/src' --exclude='fsl/src'
           export OS="Linux"
@@ -109,18 +96,15 @@ jobs:
           export FSLWISH="/usr/bin/wish"
           export PATH="$FSLDIR/bin:$PATH"
           ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }}
-          
-      - name: Upload a Build Artifact
+      - name: Save SRC
+        if: ${{ github.event.inputs.eddy == 'true' }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_src
-          path: |
-            ./*.src.gz
-          if-no-files-found: error
-          retention-days: 90        
-
+          path: ${{ matrix.files }}
+        
   reconstruction:
-    needs: eddy_correction
+    needs: preprocessing
     runs-on: ubuntu-latest
     outputs:
       files: ${{ steps.fib.outputs.files }}
@@ -144,17 +128,12 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_quality_check_post_eddy
-          path: ./qc.txt
-          if-no-files-found: error
-          retention-days: 90
-          
+          path: qc_post_eddy.txt
       - name: Upload FIB files
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_fib
-          path: ./*.fib.gz
-          if-no-files-found: error
-          retention-days: 90
+          path: ~/*.fib.gz
           
   region_analysis:
     if: ${{ github.event.inputs.region_analysis == 'true'}}
@@ -172,19 +151,14 @@ jobs:
         with:
           name: ${{ github.event.inputs.id }}_fib
           path: ${{ matrix.files }}
-          
       - name: Analyzing Regions
         run: |
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
-
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_region_analysis
-          path: |
-            ./*.txt 
-          if-no-files-found: error
-          retention-days: 90        
+          path: ~/*.txt 
         
   automatic_fiber_tracking:
     if: ${{ github.event.inputs.autotrack == 'true'}}
@@ -212,10 +186,8 @@ jobs:
         with:
           name: ${{ github.event.inputs.id }}_autotrack
           path: |
-            ./*.tt.gz 
-            ./*.stat.txt 
-          if-no-files-found: error
-          retention-days: 90
+            ~/*.tt.gz 
+            ~/*.stat.txt 
           
   connectivity_matrix:
     if: ${{ github.event.inputs.connectivity_matrix == 'true'}}
@@ -235,14 +207,11 @@ jobs:
           path: ${{ matrix.files }}          
       - name: Tracking
         run: |
-          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}
-          
+          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_connectivity_matrix
           path: |
-            ./*.mat
-            ./*.txt
-          if-no-files-found: error
-          retention-days: 90
+            ~/*.mat
+            ~/*.txt
