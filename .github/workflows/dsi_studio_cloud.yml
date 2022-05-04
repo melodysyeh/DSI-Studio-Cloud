@@ -8,19 +8,19 @@ on:
         required: true
       eddy:
         type: boolean
-        default: true
+        default: 'true'
         description: 'Preprocessing: Eddy correction'
       region_analysis:
         type: boolean
-        default: true
+        default: 'true'
         description: 'Pipeline: Region Analysis'
       connectivity_matrix:
         type: boolean
-        default: true
+        default: 'true'
         description: 'Pipeline: Connectivity Matrix'
       autotrack:
         type: boolean
-        default: true
+        default: 'true'
         description: 'Pipeline: Automatic Fiber Tracking'
       atlas:
         description: 'Options: Atlases'
@@ -64,7 +64,7 @@ jobs:
           retention-days: 90
 
       - name: Upload SRC files for Eddy
-        if: ${{ github.event.inputs.eddy }}
+        if: ${{ github.event.inputs.eddy == 'true' }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_raw_src
@@ -73,7 +73,7 @@ jobs:
           retention-days: 90
 
       - name: Upload SRC files Skipping Eddy
-        if: ${{ !github.event.inputs.eddy }}
+        if: ${{ github.event.inputs.eddy == 'false'}}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_src
@@ -93,13 +93,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.2
       - name: Setup Environment
-        if: ${{ github.event.inputs.eddy }}
+        if: ${{ github.event.inputs.eddy == 'true'}}
         uses: ./.github/workflows/download_fib
         with:
           fib_file: openneuro_${{ github.event.inputs.id }}_raw_src
           
       - name: Setup and run Eddy
-        if: ${{ github.event.inputs.eddy }}
+        if: ${{ github.event.inputs.eddy == 'true'}}
         run: |
           curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt --exclude='fsl/doc' --exclude='fsl/refdoc' --exclude='fsl/python/oxford_asl' --exclude='fsl/data/possum' --exclude='fsl/data/first' --exclude='fsl/data/mist' --exclude='fsl/data/atlases' --exclude='fsl/data/xtract_data' --exclude='fsl/extras/doc' --exclude='fsl/extras/man' --exclude='fsl/extras/src' --exclude='fsl/src'
           export OS="Linux"
@@ -114,7 +114,7 @@ jobs:
           ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }}
           
       - name: Upload a Build Artifact
-        if: ${{ github.event.inputs.eddy }}
+        if: ${{ github.event.inputs.eddy == 'true'}}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_src
@@ -161,7 +161,7 @@ jobs:
           retention-days: 90
           
   region_analysis:
-    if: ${{ github.event.inputs.region_analysis }}
+    if: ${{ github.event.inputs.region_analysis == 'true'}}
     needs: reconstruction
     strategy:
       matrix:
@@ -190,7 +190,7 @@ jobs:
           retention-days: 90        
         
   automatic_fiber_tracking:
-    if: ${{ github.event.inputs.autotrack }}
+    if: ${{ github.event.inputs.autotrack == 'true'}}
     needs: reconstruction
     strategy:
       matrix:
@@ -221,7 +221,7 @@ jobs:
           retention-days: 90
           
   connectivity_matrix:
-    if: ${{ github.event.inputs.connectivity_matrix }}
+    if: ${{ github.event.inputs.connectivity_matrix == 'true'}}
     needs: reconstruction
     strategy:
       matrix:
