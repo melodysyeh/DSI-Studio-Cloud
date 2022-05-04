@@ -8,23 +8,19 @@ on:
         required: true
       eddy:
         type: boolean
-        default: 'true'
+        default: true
         description: 'Preprocessing: Eddy correction'
-      eddy:
-        type: boolean
-        default: 'true'
-        description: 'Preprocessing: Eddy'
       region_analysis:
         type: boolean
-        default: 'true'
+        default: true
         description: 'Pipeline: Region Analysis'
       connectivity_matrix:
         type: boolean
-        default: 'true'
+        default: true
         description: 'Pipeline: Connectivity Matrix'
       autotrack:
         type: boolean
-        default: 'true'
+        default: true
         description: 'Pipeline: Automatic Fiber Tracking'
       atlas:
         description: 'Options: Atlases'
@@ -68,7 +64,7 @@ jobs:
           retention-days: 90
 
       - name: Upload SRC files
-        if: ${{ github.event.inputs.eddy == 'true' }}
+        if: ${{ github.event.inputs.eddy }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_raw_src
@@ -77,7 +73,7 @@ jobs:
           retention-days: 90
 
       - name: Upload SRC files
-        if: ${{ github.event.inputs.eddy == 'false' }}
+        if: ${{ !github.event.inputs.eddy }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_src
@@ -97,18 +93,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.2
       - name: Setup Environment
-        if: ${{ github.event.inputs.eddy == 'true' }}
+        if: ${{ github.event.inputs.eddy }}
         uses: ./.github/workflows/download_fib
         with:
           fib_file: openneuro_${{ github.event.inputs.id }}_raw_src
           
       - name: Eddy
-        if: ${{ github.event.inputs.eddy == 'true' }}
+        if: ${{ github.event.inputs.eddy }}
         run: |
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --cmd="[Step T2][Corrections][EDDY]" --save_src=*.src.gz
           
       - name: Upload a Build Artifact
-        if: ${{ github.event.inputs.eddy == 'true' }}
+        if: ${{ github.event.inputs.eddy }}
         uses: actions/upload-artifact@v2.2.4
         with:
           name: openneuro_${{ github.event.inputs.id }}_src
@@ -155,7 +151,7 @@ jobs:
           retention-days: 90
           
   region_analysis:
-    if: ${{ github.event.inputs.region_analysis == 'true' }}
+    if: ${{ github.event.inputs.region_analysis }}
     needs: reconstruction
     strategy:
       matrix:
@@ -184,7 +180,7 @@ jobs:
           retention-days: 90        
         
   automatic_fiber_tracking:
-    if: ${{ github.event.inputs.autotrack == 'true' }}
+    if: ${{ github.event.inputs.autotrack }}
     needs: reconstruction
     strategy:
       matrix:
@@ -215,7 +211,7 @@ jobs:
           retention-days: 90
           
   connectivity_matrix:
-    if: ${{ github.event.inputs.connectivity_matrix == 'true' }}
+    if: ${{ github.event.inputs.connectivity_matrix }}
     needs: reconstruction
     strategy:
       matrix:
