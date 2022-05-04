@@ -36,7 +36,7 @@ on:
         required: false
       
 jobs:    
-  rec:
+  reconstruction:
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.fib.outputs.files }}
@@ -94,12 +94,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           
-  ana:
+  region_analysis:
     if: ${{ github.event.inputs.region_analysis == 'true' }}
-    needs: rec
+    needs: reconstruction
     strategy:
       matrix:
-        files: ${{ fromjson(needs.rec.outputs.files) }}
+        files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -123,12 +123,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90        
         
-  atk:
+  automatic_fiber_tracking:
     if: ${{ github.event.inputs.autotrack == 'true' }}
-    needs: rec
+    needs: reconstruction
     strategy:
       matrix:
-        files: ${{ fromjson(needs.rec.outputs.files) }}
+        files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -154,12 +154,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           
-  trk:
+  connectivity_matrix:
     if: ${{ github.event.inputs.connectivity_matrix == 'true' }}
-    needs: rec
+    needs: reconstruction
     strategy:
       matrix:
-        files: ${{ fromjson(needs.rec.outputs.files) }}
+        files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
