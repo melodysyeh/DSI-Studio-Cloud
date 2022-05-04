@@ -146,13 +146,14 @@ jobs:
     steps:
       - name: Download DSI Studio
         run: curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
-      - name: Download SRC
+      - name: Download FIB file
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
           path: ${{ matrix.files }}
       - name: Analyzing Regions
         run: |
+          ls -l
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -171,7 +172,7 @@ jobs:
     steps:
       - name: Download DSI Studio
         run: curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
-      - name: Download SRC
+      - name: Download FIB file
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
@@ -200,7 +201,7 @@ jobs:
     steps:
       - name: Download DSI Studio
         run: curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
-      - name: Download SRC
+      - name: Download FIB file
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
