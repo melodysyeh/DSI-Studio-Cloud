@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_src
-          path: ~/*.src.gz
+          path: ./*.src.gz
 
   preprocessing:
     needs: download_data
@@ -133,7 +133,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_fib
-          path: ~/*.fib.gz
+          path: ./*.fib.gz
           
   region_analysis:
     if: ${{ github.event.inputs.region_analysis == 'true'}}
@@ -158,7 +158,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_region_analysis
-          path: ~/*.txt 
+          path: ./*.txt 
         
   automatic_fiber_tracking:
     if: ${{ github.event.inputs.autotrack == 'true'}}
@@ -186,8 +186,8 @@ jobs:
         with:
           name: ${{ github.event.inputs.id }}_autotrack
           path: |
-            ~/*.tt.gz 
-            ~/*.stat.txt 
+            ./*.tt.gz 
+            ./*.stat.txt 
           
   connectivity_matrix:
     if: ${{ github.event.inputs.connectivity_matrix == 'true'}}
@@ -213,5 +213,5 @@ jobs:
         with:
           name: ${{ github.event.inputs.id }}_connectivity_matrix
           path: |
-            ~/*.mat
-            ~/*.txt
+            ./*.mat
+            ./*.txt
