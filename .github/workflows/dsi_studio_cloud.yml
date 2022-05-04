@@ -58,7 +58,7 @@ jobs:
       - name: Upload SRC QC report
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_raw_qc
+          name: ${{ github.event.inputs.id }}_quality_check_raw_data
           path: ./qc.txt
           if-no-files-found: error
           retention-days: 90
@@ -67,7 +67,7 @@ jobs:
         if: ${{ github.event.inputs.eddy == 'true' }}
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_raw_src
+          name: ${{ github.event.inputs.id }}_raw_src
           path: ./*.src.gz
           if-no-files-found: error
           retention-days: 90
@@ -76,7 +76,7 @@ jobs:
         if: ${{ github.event.inputs.eddy == 'false'}}
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_src
+          name: ${{ github.event.inputs.id }}_src
           path: ./*.src.gz
           if-no-files-found: error
           retention-days: 90
@@ -96,7 +96,7 @@ jobs:
         if: ${{ github.event.inputs.eddy == 'true'}}
         uses: ./.github/workflows/download_fib
         with:
-          fib_file: openneuro_${{ github.event.inputs.id }}_raw_src
+          fib_file: ${{ github.event.inputs.id }}_raw_src
           
       - name: Setup and run Eddy
         if: ${{ github.event.inputs.eddy == 'true'}}
@@ -117,7 +117,7 @@ jobs:
         if: ${{ github.event.inputs.eddy == 'true'}}
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_src
+          name: ${{ github.event.inputs.id }}_src
           path: |
             ./*.src.gz
           if-no-files-found: error
@@ -134,7 +134,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/workflows/download_fib
         with:
-          fib_file: openneuro_${{ github.event.inputs.id }}_src
+          fib_file: ${{ github.event.inputs.id }}_src
           
       - name: Create FIB Files
         id: fib
@@ -144,10 +144,11 @@ jobs:
           FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}
 
-      - name: Upload SRC QC report
+      - name: Upload SRC QC report post Eddy
+        if: ${{ github.event.inputs.eddy == 'true'}}
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_src_qc
+          name: ${{ github.event.inputs.id }}_quality_check_post_eddy
           path: ./qc.txt
           if-no-files-found: error
           retention-days: 90
@@ -155,7 +156,7 @@ jobs:
       - name: Upload FIB files
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_fib
+          name: ${{ github.event.inputs.id }}_fib
           path: ./*.fib.gz
           if-no-files-found: error
           retention-days: 90
@@ -174,7 +175,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/workflows/download_fib
         with:
-          fib_file: openneuro_${{ github.event.inputs.id }}_fib
+          fib_file: ${{ github.event.inputs.id }}_fib/${{ matrix.files }}
           
       - name: Analyzing Regions
         run: |
@@ -183,7 +184,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_region_analysis
+          name: ${{ github.event.inputs.id }}_region_analysis
           path: |
             ./*.txt 
           if-no-files-found: error
@@ -203,7 +204,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/workflows/download_fib
         with:
-          fib_file: openneuro_${{ github.event.inputs.id }}_fib
+          fib_file: ${{ github.event.inputs.id }}_fib
 
       - name: AutoTrack
         run: |
@@ -213,7 +214,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_autotrack
+          name: ${{ github.event.inputs.id }}_autotrack
           path: |
             ./*.tt.gz 
             ./*.stat.txt 
@@ -234,7 +235,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/workflows/download_fib
         with:
-          fib_file: openneuro_${{ github.event.inputs.id }}_fib
+          fib_file: ${{ github.event.inputs.id }}_fib
           
       - name: Tracking
         run: |
@@ -243,7 +244,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: openneuro_${{ github.event.inputs.id }}_connectivity_matrix
+          name: ${{ github.event.inputs.id }}_connectivity_matrix
           path: |
             ./*.mat
             ./*.txt
