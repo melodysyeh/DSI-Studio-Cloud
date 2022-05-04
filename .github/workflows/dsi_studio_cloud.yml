@@ -101,7 +101,7 @@ jobs:
       - name: Setup and run Eddy
         if: ${{ github.event.inputs.eddy }}
         run: |
-          curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt --exclude='fsl/doc' --exclude='fsl/refdoc' --exclude='fsl/python/oxford_asl' --exclude='fsl/data/possum' --exclude='fsl/data/first' --exclude='fsl/data/mist' --exclude='fsl/data/atlases' --exclude='fsl/data/xtract_data' --exclude='fsl/extras/doc' --exclude='fsl/extras/man' --exclude='fsl/extras/src' --exclude='fsl/src'
+          curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt fsl/bin/eddy_openmp
           OS="Linux"
           FSLDIR="/opt/fsl"
           FSL_DIR="$FSLDIR"
@@ -111,6 +111,7 @@ jobs:
           FSLTCLSH="/usr/bin/tclsh"
           FSLWISH="/usr/bin/wish"
           PATH="$FSLDIR/bin:$PATH"
+          mv /opt/fsl/bin/eddy_openmp /opt/fsl/bin/eddy
           ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }}
           
       - name: Upload a Build Artifact
