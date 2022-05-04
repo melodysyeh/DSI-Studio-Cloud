@@ -14,23 +14,27 @@ on:
         type: boolean
         default: 'true'
         description: 'Preprocessing: QC report'
-      reconstruction:
-        type: choice
-        description: 'Preprocessing: Reconstruction'
-        options: 
-        - GQI
-        - QSDR
-      region:
+      region_analysis:
+        type: boolean
+        default: 'true'
         description: 'Pipeline: Region Analysis'
-        default: 'HCP842_tractography,FreeSurferDKT_Subcortical'
-        required: false
-      tract:
-        description: 'Pipeline: AutoTrack'
-        default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
-        required: false
-      connectivity:
+      connectivity_matrix:
+        type: boolean
+        default: 'true'
         description: 'Pipeline: Connectivity Matrix'
+      autotrack:
+        type: boolean
+        default: 'true'
+        description: 'Pipeline: Automatic Fiber Tracking'
+
+      atlas:
+        description: 'Options: Atlases'
         default: 'HCP-MMP,FreeSurferDKT_Cortical'
+        required: false
+       
+      tract:
+        description: 'Options: Tracts of Interest'
+        default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
         required: false
       
 jobs:    
@@ -74,18 +78,10 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           
-      - name: Create FIB Files (GQI)
-        if: ${{ github.event.inputs.reconstruction == 'GQI' }}
+      - name: Create FIB Files
         run: |          
-          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --mask=1 --check_btable=0
-        
-      - name: Create FIB Files (QSDR)
-        if: ${{ github.event.inputs.reconstruction == 'QSDR' }}
-        run: |          
-          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --check_btable=0 --method=7
-          FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
-          echo ::set-output name=files::${FIB_LIST}
-
+          ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --mask=1 --check_btable=0  
+      
       - name: Set FIB List
         id: fib
         run: |          
@@ -101,7 +97,7 @@ jobs:
           retention-days: 90
           
   pipeline_region_analysis:
-    if: ${{ github.event.inputs.region != '' }}
+    if: ${{ github.event.inputs.region_analysis == 'true' }}
     needs: openneuro_download
     strategy:
       matrix:
@@ -118,7 +114,7 @@ jobs:
           
       - name: Analyzing Regions
         run: |
-          ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.region }}
+          ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -130,7 +126,7 @@ jobs:
           retention-days: 90        
         
   pipeline_autotrack:
-    if: ${{ github.event.inputs.tract != '' }}
+    if: ${{ github.event.inputs.autotrack == 'true' }}
     needs: openneuro_download
     strategy:
       matrix:
@@ -161,7 +157,7 @@ jobs:
           retention-days: 90
           
   pipeline_connectivity_matrix:
-    if: ${{ github.event.inputs.connectivity != '' }}
+    if: ${{ github.event.inputs.connectivity_matrix == 'true' }}
     needs: openneuro_download
     strategy:
       matrix:
@@ -178,7 +174,7 @@ jobs:
           
       - name: Tracking
         run: |
-          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.connectivity }}
+          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
