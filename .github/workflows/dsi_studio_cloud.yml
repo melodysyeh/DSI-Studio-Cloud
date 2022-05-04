@@ -102,16 +102,15 @@ jobs:
         if: ${{ github.event.inputs.eddy }}
         run: |
           curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt fsl/bin/eddy_openmp
-          OS="Linux"
-          FSLDIR="/opt/fsl"
-          FSL_DIR="$FSLDIR"
-          FSLOUTPUTTYPE="NIFTI_GZ"
-          FSLMULTIFILEQUIT="TRUE"
-          LD_LIBRARY_PATH="$FSLDIR/lib:$LD_LIBRARY_PATH"
-          FSLTCLSH="/usr/bin/tclsh"
-          FSLWISH="/usr/bin/wish"
-          PATH="$FSLDIR/bin:$PATH"
-          mv /opt/fsl/bin/eddy_openmp /opt/fsl/bin/eddy
+          export OS="Linux"
+          export FSLDIR="/opt/fsl"
+          export FSL_DIR="$FSLDIR"
+          export FSLOUTPUTTYPE="NIFTI_GZ"
+          export FSLMULTIFILEQUIT="TRUE"
+          export LD_LIBRARY_PATH="$FSLDIR/lib:$LD_LIBRARY_PATH"
+          export FSLTCLSH="/usr/bin/tclsh"
+          export FSLWISH="/usr/bin/wish"
+          export PATH="$FSLDIR/bin:$PATH"
           ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }}
           
       - name: Upload a Build Artifact
