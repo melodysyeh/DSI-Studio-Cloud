@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       id:
-        description: 'Source: OpenNeuro Accession Number'
+        description: 'OpenNeuro Accession Number'
         default: ds001021
         required: true
       save_src:
@@ -13,7 +13,7 @@ on:
       src_qc:
         type: boolean
         default: 'true'
-        description: 'Preprocessing: QC report'
+        description: 'Preprocessing: Quality Check'
       region_analysis:
         type: boolean
         default: 'true'
@@ -26,12 +26,10 @@ on:
         type: boolean
         default: 'true'
         description: 'Pipeline: Automatic Fiber Tracking'
-
       atlas:
         description: 'Options: Atlases'
         default: 'HCP-MMP,FreeSurferDKT_Cortical'
         required: false
-       
       tract:
         description: 'Options: Tracts of Interest'
         default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
