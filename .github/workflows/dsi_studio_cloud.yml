@@ -37,6 +37,7 @@ on:
       
 jobs:    
   download_data:
+    name: Download OpenNeuro ${{ github.event.inputs.id }}
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.src.outputs.files }}
@@ -61,6 +62,7 @@ jobs:
           path: ./*.src.gz
           
   quality_check1:
+    name: Quality Check 1
     if: ${{ github.event.inputs.eddy == 'true' }}
     needs: download_data
     runs-on: ubuntu-latest
@@ -81,6 +83,7 @@ jobs:
           path: qc.txt
           
   preprocessing:
+    name: Preprocessing (Eddy or Align ACPC)
     needs: download_data
     strategy:
       matrix:
@@ -136,6 +139,7 @@ jobs:
           path: ${{ matrix.files }}
 
   quality_check2:
+    name: Quality Check 2
     needs: preprocessing
     runs-on: ubuntu-latest
     steps:
@@ -155,6 +159,7 @@ jobs:
           path: qc.txt
 
   reconstruction:
+    name: Reconstruction
     needs: preprocessing
     runs-on: ubuntu-latest
     outputs:
@@ -179,6 +184,7 @@ jobs:
           path: ./*.fib.gz
           
   region_analysis:
+    name: Region Analysis
     if: github.event.inputs.region_analysis == 'true'
     needs: reconstruction
     strategy:
@@ -204,6 +210,7 @@ jobs:
           path: ./*.txt 
         
   automatic_fiber_tracking:
+    name: Automatic Fiber Tracking
     if: github.event.inputs.autotrack == 'true'
     needs: reconstruction
     strategy:
@@ -232,6 +239,7 @@ jobs:
             ./*.stat.txt 
           
   connectivity_matrix:
+    name: Connectivity Matrix
     if: github.event.inputs.connectivity_matrix == 'true'
     needs: reconstruction
     strategy:
