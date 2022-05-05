@@ -95,10 +95,19 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_src
+      - name: Setup AC-PC command
+        uses: haya14busa/action-cond@v1.0.0
+        id: acpc_command
+        with:
+          cond: ${{ github.event.inputs.acpc == 'true' }}
+          if_true: '1'
+          if_false: '0'      
       - name: Prepare Eddy environment
         if: github.event.inputs.eddy == 'true'
+        run: curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt --exclude='fsl/doc' --exclude='fsl/refdoc' --exclude='fsl/python/oxford_asl' --exclude='fsl/data/possum' --exclude='fsl/data/first' --exclude='fsl/data/mist' --exclude='fsl/data/atlases' --exclude='fsl/data/xtract_data' --exclude='fsl/extras/doc' --exclude='fsl/extras/man' --exclude='fsl/extras/src' --exclude='fsl/src'
+      - name: Eddy and align ACPC
+        if: github.event.inputs.eddy == 'true'
         run: |
-          curl -sSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos7_64.tar.gz | tar zxv --no-same-owner -C /opt --exclude='fsl/doc' --exclude='fsl/refdoc' --exclude='fsl/python/oxford_asl' --exclude='fsl/data/possum' --exclude='fsl/data/first' --exclude='fsl/data/mist' --exclude='fsl/data/atlases' --exclude='fsl/data/xtract_data' --exclude='fsl/extras/doc' --exclude='fsl/extras/man' --exclude='fsl/extras/src' --exclude='fsl/src'
           export OS="Linux"
           export FSLDIR="/opt/fsl"
           export FSL_DIR="$FSLDIR"
@@ -108,15 +117,10 @@ jobs:
           export FSLTCLSH="/usr/bin/tclsh"
           export FSLWISH="/usr/bin/wish"
           export PATH="$FSLDIR/bin:$PATH"
-      - name: correct eddy and align ACPC
-        if: github.event.inputs.eddy == 'true' && github.event.inputs.acpc == 'true'
-        run: ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }} --align_acpc=1
+          ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }} --align_acpc=${{ steps.acpc_command.outputs.value }}              
       - name: align ACPC
         if: github.event.inputs.eddy == 'false' && github.event.inputs.acpc == 'true'
         run: ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --save_src=${{ matrix.files }} --align_acpc=1
-      - name: correct Eddy
-        if: github.event.inputs.eddy == 'true' && github.event.inputs.acpc == 'false'
-        run: ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --cmd="[Step T2][Corrections][EDDY]" --save_src=${{ matrix.files }} --align_acpc=0                
       - name: Overwrite SRC Files
         if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
         uses: actions/upload-artifact@v2.2.4
