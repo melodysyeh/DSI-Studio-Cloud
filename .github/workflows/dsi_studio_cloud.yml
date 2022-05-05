@@ -54,9 +54,10 @@ jobs:
           echo ::set-output name=files::${FIB_LIST}    
       
       - name: Save QC report
+        if: ${{ github.event.inputs.eddy == 'true' }}
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ${{ github.event.inputs.id }}_quality_check_raw_data
+          name: ${{ github.event.inputs.id }}_quality_check_before_eddy
           path: qc.txt
 
       - name: Save SRC files
@@ -101,7 +102,26 @@ jobs:
         with:
           name: ${{ github.event.inputs.id }}_src
           path: ${{ matrix.files }}
-        
+
+  quality_check:
+    needs: preprocessing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download DSI Studio
+        run: curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
+      - name: Download SRC
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_src
+      - name: Quality Check
+        run: |        
+          ./dsi-studio/dsi_studio --action=qc --source=.
+      - name: Upload SRC QC report post Eddy
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ github.event.inputs.id }}_quality_check
+          path: qc.txt
+
   reconstruction:
     needs: preprocessing
     runs-on: ubuntu-latest
@@ -117,17 +137,9 @@ jobs:
       - name: Create FIB Files
         id: fib
         run: |        
-          ./dsi-studio/dsi_studio --action=qc --source=.
           ./dsi-studio/dsi_studio --action=rec --source=*.src.gz --mask=1 --check_btable=0  
           FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}
-
-      - name: Upload SRC QC report post Eddy
-        if: ${{ github.event.inputs.eddy == 'true'}}
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: ${{ github.event.inputs.id }}_quality_check_post_eddy
-          path: qc_post_eddy.txt
       - name: Upload FIB files
         uses: actions/upload-artifact@v2.2.4
         with:
