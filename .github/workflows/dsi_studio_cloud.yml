@@ -98,6 +98,11 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_src
+      - name: Download Raw SRC (Backup)
+        if: failure() && (github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true')
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_src
       - name: Setup AC-PC command
         uses: haya14busa/action-cond@v1.0.0
         id: acpc_command
