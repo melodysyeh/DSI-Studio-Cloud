@@ -63,10 +63,6 @@ jobs:
   quality_check1:
     if: ${{ github.event.inputs.eddy == 'true' }}
     needs: download_data
-    strategy:
-      matrix:
-        files: ${{ fromjson(needs.download_data.outputs.files) }}
-      fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - name: Download DSI Studio
