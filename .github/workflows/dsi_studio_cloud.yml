@@ -81,7 +81,6 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_src
-          path: ${{ matrix.files }}
       - name: Eddy Correction
         if: ${{ github.event.inputs.eddy == 'true' }}
         run: |
@@ -150,7 +149,6 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
-          path: ${{ matrix.files }}
       - name: Analyzing Regions
         run: |
           ls -l
@@ -176,7 +174,6 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
-          path: ${{ matrix.files }}
       - name: AutoTrack
         run: |
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
@@ -205,7 +202,6 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_fib
-          path: ${{ matrix.files }}          
       - name: Tracking
         run: |
           ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
