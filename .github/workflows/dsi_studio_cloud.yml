@@ -55,21 +55,28 @@ jobs:
           FIB_LIST=$(ls *.src.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}    
       - name: Save SRC files
+        if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: ${{ github.event.inputs.id }}_raw_src
+          path: ./*.src.gz
+      - name: Save SRC files
+        if: github.event.inputs.eddy == 'false' && github.event.inputs.acpc == 'false'
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_src
-          path: ./*.src.gz
+          path: ./*.src.gz          
           
   quality_check1:
     name: Quality Check 1
-    if: ${{ github.event.inputs.eddy == 'true' }}
+    if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
     needs: download_data
     runs-on: ubuntu-latest
     steps:
       - name: Prepare Raw SRC
         uses: actions/download-artifact@v3.0.0
         with:
-          name: ${{ github.event.inputs.id }}_src
+          name: ${{ github.event.inputs.id }}_raw_src
       - name: Quality Check
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
@@ -93,7 +100,7 @@ jobs:
         if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
         uses: actions/download-artifact@v3.0.0
         with:
-          name: ${{ github.event.inputs.id }}_src
+          name: ${{ github.event.inputs.id }}_raw_src
       - name: Download Raw SRC (Backup)
         if: failure() && (github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true')
         uses: actions/download-artifact@v3.0.0
@@ -135,7 +142,7 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=rec --source=${{ matrix.files }} --save_src=${{ matrix.files }} --align_acpc=1
-      - name: Overwrite SRC Files
+      - name: Save SRC Files
         if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -151,6 +158,11 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: ${{ github.event.inputs.id }}_src
+      - name: Delete Raw SRC Files
+        if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
+        uses: GeekyEggo/delete-artifact@v1.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_raw_src
       - name: Quality Check
         run: |        
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
