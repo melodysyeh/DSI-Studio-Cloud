@@ -32,7 +32,7 @@ on:
         required: false
       tract:
         description: 'Options: Tracts of Interest'
-        default: 'Arcuate_Fasciculus_L,Optic_Radiation_L'
+        default: 'Corticospinal_Tract_L,Uncinate_Fasciculus_R'
         required: false
       
 jobs:    
