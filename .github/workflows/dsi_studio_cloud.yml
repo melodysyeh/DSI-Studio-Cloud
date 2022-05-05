@@ -37,7 +37,7 @@ on:
       
 jobs:    
   download_data:
-    name: Download OpenNeuro ${{ github.event.inputs.id }}
+    name: Download ${{ github.event.inputs.id }}
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.src.outputs.files }}
@@ -83,7 +83,7 @@ jobs:
           path: qc.txt
           
   preprocessing:
-    name: Preprocessing (Eddy or Align ACPC)
+    name: Preprocessing
     needs: download_data
     strategy:
       matrix:
