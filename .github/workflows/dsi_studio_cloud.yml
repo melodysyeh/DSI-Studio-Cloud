@@ -109,6 +109,7 @@ jobs:
     strategy:
       matrix:
         files: ${{ fromjson(needs.download_data.outputs.files) }}
+        dataset_description: ${{ fromjson(needs.download_data.outputs.dataset_description) }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -194,7 +195,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: qc2.txt
-          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.preprocessing.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   reconstruction:
@@ -203,6 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       files: ${{ steps.fib.outputs.files }}
+      dataset_description: ${{ fromjson(needs.preprocessing.outputs.dataset_description) }}
     steps:
       - name: Prepare SRC Files
         uses: actions/download-artifact@v3.0.0
@@ -221,7 +223,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_fib.zip
-          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.preprocessing.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   region_analysis:
@@ -250,7 +252,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
-          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   automatic_fiber_tracking:
@@ -281,7 +283,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_autotrack.zip
-          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   connectivity_matrix:
@@ -310,6 +312,6 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
-          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
     
