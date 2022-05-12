@@ -106,10 +106,11 @@ jobs:
   preprocessing:
     name: Preprocessing
     needs: download_data
+    outputs:
+      dataset_description: ${{ needs.download_data.outputs.dataset_description }}    
     strategy:
       matrix:
         files: ${{ fromjson(needs.download_data.outputs.files) }}
-        dataset_description: ${{ needs.download_data.outputs.dataset_description }}
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
