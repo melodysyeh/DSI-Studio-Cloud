@@ -227,12 +227,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
-        uses: robinraju/release-downloader@v1.3
+        uses: i3h/download-release-asset@v1.3.2
         with:
-          repository: ${{ github.repository }}
-          tag: ${{ github.event.inputs.id }}
-          fileName: ${{ github.event.inputs.id }}_fib.zip
-          token: ${{ github.event.inputs.id }}
+          repo: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          file: "${{ github.event.inputs.id }}_fib.zip"
       - name: Analyzing Regions
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
@@ -261,9 +260,9 @@ jobs:
       - name: Prepare FIB file
         uses: robinraju/release-downloader@v1.3
         with:
-          repository: ${{ github.repository }}
-          tag: ${{ github.event.inputs.id }}
-          fileName: ${{ github.event.inputs.id }}_fib.zip
+          repository: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          fileName: "${{ github.event.inputs.id }}_fib.zip"
       - name: AutoTrack
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
@@ -294,9 +293,9 @@ jobs:
       - name: Prepare FIB file
         uses: robinraju/release-downloader@v1.3
         with:
-          repository: ${{ github.repository }}
-          tag: ${{ github.event.inputs.id }}
-          fileName: ${{ github.event.inputs.id }}_fib.zip
+          repository: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          fileName: "${{ github.event.inputs.id }}_fib.zip"
       - name: Tracking
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
