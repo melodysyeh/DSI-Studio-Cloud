@@ -41,11 +41,18 @@ jobs:
     runs-on: ubuntu-18.04
     outputs:
       files: ${{ steps.src.outputs.files }}
+      dataset_description: ${{ steps.openneuro.outputs.dataset_description }}
     steps:
       - name: Download ${{ github.event.inputs.id }}
+        id: openneuro
         run: |
-          aws s3 sync --no-sign-request --exclude "*" --include "*dwi.*" s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
-          ls * -l    
+          aws s3 sync --no-sign-request --exclude "*" --include "*dwi.*" s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }} 
+          aws s3 sync --no-sign-request --exclude "*" --include "dataset_description.json" s3://openneuro.org/${{ github.event.inputs.id }} ${{ github.event.inputs.id }}
+          content=`cat dataset_description.json`
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          echo "::set-output name=dataset_description::$content"    
       - name: Create SRC Files
         id: src
         run: |
@@ -54,6 +61,7 @@ jobs:
           mv ./**/*.src.gz .
           FIB_LIST=$(ls *.src.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}    
+        
       - name: Save SRC files
         if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
         uses: actions/upload-artifact@v2.2.4
@@ -92,7 +100,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: qc1.txt
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}  
           
   preprocessing:
@@ -186,7 +194,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: qc2.txt
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   reconstruction:
@@ -213,7 +221,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_fib.zip
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   region_analysis:
@@ -242,7 +250,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   automatic_fiber_tracking:
@@ -273,7 +281,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_autotrack.zip
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   connectivity_matrix:
@@ -302,6 +310,6 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
-          name: ${{ github.event.inputs.id }}
+          name: "${{ fromjson(needs.download_data.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
     
