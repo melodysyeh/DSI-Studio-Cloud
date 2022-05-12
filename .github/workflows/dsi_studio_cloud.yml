@@ -80,12 +80,20 @@ jobs:
       - name: Quality Check
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
-          ./dsi-studio/dsi_studio --action=qc --source=.      
+          ./dsi-studio/dsi_studio --action=qc --source=.    
+          mv qc.txt qc1.txt
       - name: Save QC report
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_quality_check_before_eddy
-          path: qc.txt
+          path: qc1.txt
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          allowUpdates: true
+          artifacts: qc1.txt
+          name: ${{ github.event.inputs.id }}
+          tag: ${{ github.event.inputs.id }}  
           
   preprocessing:
     name: Preprocessing
@@ -167,12 +175,20 @@ jobs:
         run: |        
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=qc --source=.
+          mv qc.txt qc2.txt
       - name: Upload SRC QC report post Eddy
         uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ github.event.inputs.id }}_quality_check
-          path: qc.txt
-
+          path: qc2.txt
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          allowUpdates: true
+          artifacts: qc2.txt
+          name: ${{ github.event.inputs.id }}
+          tag: ${{ github.event.inputs.id }}
+          
   reconstruction:
     name: Reconstruction
     needs: preprocessing
@@ -215,12 +231,15 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
-      - name: Save Result
-        uses: actions/upload-artifact@v2.2.4
+          zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          name: ${{ github.event.inputs.id }}_region_analysis
-          path: ./*.txt 
-        
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
+          name: ${{ github.event.inputs.id }}
+          tag: ${{ github.event.inputs.id }}
+          
   automatic_fiber_tracking:
     name: Automatic Fiber Tracking
     if: github.event.inputs.autotrack == 'true'
@@ -241,13 +260,14 @@ jobs:
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
-      - name: Save Result
-        uses: actions/upload-artifact@v2.2.4
+          zip ${{ github.event.inputs.id }}_autotrack.zip *.tt.gz *.stat.txt
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          name: ${{ github.event.inputs.id }}_autotrack
-          path: |
-            ./*.tt.gz 
-            ./*.stat.txt 
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_autotrack.zip
+          name: ${{ github.event.inputs.id }}
+          tag: ${{ github.event.inputs.id }}
           
   connectivity_matrix:
     name: Connectivity Matrix
@@ -267,10 +287,12 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
-      - name: Save Result
-        uses: actions/upload-artifact@v2.2.4
+          zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          name: ${{ github.event.inputs.id }}_connectivity_matrix
-          path: |
-            ./*.mat
-            ./*.txt
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
+          name: ${{ github.event.inputs.id }}
+          tag: ${{ github.event.inputs.id }}
+    
