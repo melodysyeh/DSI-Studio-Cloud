@@ -208,11 +208,6 @@ jobs:
           zip ${{ github.event.inputs.id }}_fib.zip *.fib.gz
           FIB_LIST=$(ls *.fib.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}
-      - name: Upload FIB files
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: ${{ github.event.inputs.id }}_fib
-          path: ./*.fib.gz
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
@@ -232,26 +227,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
-        uses: actions/download-artifact@v3.0.0
-        with:
-          name: ${{ github.event.inputs.id }}_fib
-      - name: Prepare FIB file
         uses: robinraju/release-downloader@v1.3
         with:
           repository: ${{ github.repository }}
           tag: ${{ github.event.inputs.id }}
-          fileName: ${{ github.event.inputs.id }}_fib.gz
+          fileName: ${{ github.event.inputs.id }}_fib.zip
           token: ${{ github.event.inputs.id }}
-    
-      - name: Prepare FIB file
-        uses: actions/download-artifact@v3.0.0
-        with:
-          name: ${{ github.event.inputs.id }}_fib
-
-          
       - name: Analyzing Regions
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
+          unzip -q dsi_studio_ubuntu_2004.zip.zip
+          unzip -q ${{ github.event.inputs.id }}_fib.zip
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
           zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
       - name: Create Release
@@ -273,12 +259,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
-        uses: actions/download-artifact@v3.0.0
+        uses: robinraju/release-downloader@v1.3
         with:
-          name: ${{ github.event.inputs.id }}_fib
+          repository: ${{ github.repository }}
+          tag: ${{ github.event.inputs.id }}
+          fileName: ${{ github.event.inputs.id }}_fib.zip
       - name: AutoTrack
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
+          unzip -q dsi_studio_ubuntu_2004.zip.zip
+          unzip -q ${{ github.event.inputs.id }}_fib.zip
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
@@ -302,13 +292,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
-        uses: actions/download-artifact@v3.0.0
+        uses: robinraju/release-downloader@v1.3
         with:
-          name: ${{ github.event.inputs.id }}_fib
+          repository: ${{ github.repository }}
+          tag: ${{ github.event.inputs.id }}
+          fileName: ${{ github.event.inputs.id }}_fib.zip
       - name: Tracking
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
-          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
+          unzip -q dsi_studio_ubuntu_2004.zip.zip
+          unzip -q ${{ github.event.inputs.id }}_fib.zip./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
           zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
