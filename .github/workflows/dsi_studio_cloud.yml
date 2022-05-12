@@ -32,7 +32,7 @@ on:
         required: false
       tract:
         description: 'Options: Tracts of Interest'
-        default: 'Corticospinal_Tract_L,Uncinate_Fasciculus_R'
+        default: 'Arcuate_Fasciculus_L,Cingulum_Frontal_Parietal_R'
         required: false
       
 jobs:    
