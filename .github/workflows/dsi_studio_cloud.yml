@@ -227,16 +227,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
-        uses: i3h/download-release-asset@v1.3.2
+        uses: robinraju/release-downloader@v1.3
         with:
-          repo: "${{ github.repository }}"
+          repository: "${{ github.repository }}"
           tag: "${{ github.event.inputs.id }}"
-          file: "${{ github.event.inputs.id }}_fib.zip"
+          fileName: "${{ github.event.inputs.id }}_fib.zip"
       - name: Analyzing Regions
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
-          unzip -q dsi_studio_ubuntu_2004.zip.zip
-          unzip -q ${{ github.event.inputs.id }}_fib.zip
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
           zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
       - name: Create Release
@@ -265,9 +263,7 @@ jobs:
           fileName: "${{ github.event.inputs.id }}_fib.zip"
       - name: AutoTrack
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
-          unzip -q dsi_studio_ubuntu_2004.zip.zip
-          unzip -q ${{ github.event.inputs.id }}_fib.zip
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
@@ -298,9 +294,8 @@ jobs:
           fileName: "${{ github.event.inputs.id }}_fib.zip"
       - name: Tracking
         run: |
-          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" 
-          unzip -q dsi_studio_ubuntu_2004.zip.zip
-          unzip -q ${{ github.event.inputs.id }}_fib.zip./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
+          curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
+          ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
           zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
