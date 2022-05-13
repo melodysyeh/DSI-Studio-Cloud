@@ -238,7 +238,6 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
-          zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
       - name: Save Result
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -267,7 +266,6 @@ jobs:
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
-          zip ${{ github.event.inputs.id }}_autotrack.zip *.tt.gz *.stat.txt
       - name: Save Result
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -296,7 +294,6 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
-          zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
       - name: Save Result
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -305,3 +302,61 @@ jobs:
             ./*.mat
             ./*.txt
     
+  region_analysis_output:
+    name: Save Region Analysis Results
+    if: github.event.inputs.region_analysis == 'true'
+    needs: region_analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect results
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_region_analysis
+      - name: Zip results
+        run: zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
+      - name: Release result
+        uses: robinraju/release-downloader@v1.3
+        with:
+          repository: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          fileName: "${{ github.event.inputs.id }}_region_analysis.zip"
+          
+  automatic_fiber_tracking_output:
+    name: Save AutoTrack Results
+    if: github.event.inputs.autotrack == 'true'
+    needs: automatic_fiber_tracking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect results
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_autotrack
+      - name: Zip results
+        run: zip ${{ github.event.inputs.id }}_autotrack.zip *.tt.gz *.stat.txt
+      - name: Release result
+        uses: robinraju/release-downloader@v1.3
+        with:
+          repository: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          fileName: "${{ github.event.inputs.id }}_autotrack.zip"
+
+  connectivity_matrix_output:
+    name: Save Connectivity Matrix Results
+    if: github.event.inputs.connectivity_matrix == 'true'
+    needs: connectivity_matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect results
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ github.event.inputs.id }}_connectivity_matrix
+      - name: Zip results
+        run: zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
+      - name: Release result
+        uses: robinraju/release-downloader@v1.3
+        with:
+          repository: "${{ github.repository }}"
+          tag: "${{ github.event.inputs.id }}"
+          fileName: "${{ github.event.inputs.id }}_connectivity_matrix.zip"
+          
+          
