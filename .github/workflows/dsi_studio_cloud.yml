@@ -90,11 +90,6 @@ jobs:
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=qc --source=.    
           mv qc.txt qc1.txt
-      - name: Save QC report
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: ${{ github.event.inputs.id }}_quality_check_before_eddy
-          path: qc1.txt
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
@@ -186,11 +181,6 @@ jobs:
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q *.zip
           ./dsi-studio/dsi_studio --action=qc --source=.
           mv qc.txt qc2.txt
-      - name: Upload SRC QC report post Eddy
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: ${{ github.event.inputs.id }}_quality_check
-          path: qc2.txt
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
