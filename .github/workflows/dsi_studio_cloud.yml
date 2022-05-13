@@ -314,12 +314,13 @@ jobs:
           name: ${{ github.event.inputs.id }}_region_analysis
       - name: Zip results
         run: zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
-      - name: Release result
-        uses: robinraju/release-downloader@v1.3
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          repository: "${{ github.repository }}"
-          tag: "${{ github.event.inputs.id }}"
-          fileName: "${{ github.event.inputs.id }}_region_analysis.zip"
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          tag: ${{ github.event.inputs.id }}
           
   automatic_fiber_tracking_output:
     name: Save AutoTrack Results
@@ -333,12 +334,13 @@ jobs:
           name: ${{ github.event.inputs.id }}_autotrack
       - name: Zip results
         run: zip ${{ github.event.inputs.id }}_autotrack.zip *.tt.gz *.stat.txt
-      - name: Release result
-        uses: robinraju/release-downloader@v1.3
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          repository: "${{ github.repository }}"
-          tag: "${{ github.event.inputs.id }}"
-          fileName: "${{ github.event.inputs.id }}_autotrack.zip"
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_autotrack.zip
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          tag: ${{ github.event.inputs.id }}
 
   connectivity_matrix_output:
     name: Save Connectivity Matrix Results
@@ -352,11 +354,12 @@ jobs:
           name: ${{ github.event.inputs.id }}_connectivity_matrix
       - name: Zip results
         run: zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
-      - name: Release result
-        uses: robinraju/release-downloader@v1.3
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
         with:
-          repository: "${{ github.repository }}"
-          tag: "${{ github.event.inputs.id }}"
-          fileName: "${{ github.event.inputs.id }}_connectivity_matrix.zip"
+          allowUpdates: true
+          artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
+          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          tag: ${{ github.event.inputs.id }}
           
           
