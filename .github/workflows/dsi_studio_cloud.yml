@@ -228,6 +228,8 @@ jobs:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
+    outputs:
+      dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}      
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
@@ -254,6 +256,8 @@ jobs:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
+    outputs:
+      dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}            
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
@@ -284,6 +288,8 @@ jobs:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
       fail-fast: false
+    outputs:
+      dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}            
     runs-on: ubuntu-latest
     steps:
       - name: Prepare FIB file
@@ -321,7 +327,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.region_analysis.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
   automatic_fiber_tracking_output:
@@ -341,7 +347,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_autotrack.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.automatic_fiber_tracking.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
 
   connectivity_matrix_output:
@@ -361,7 +367,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
+          name: "${{ fromjson(needs.connectivity_matrix.outputs.dataset_description).Name }}"
           tag: ${{ github.event.inputs.id }}
           
           
