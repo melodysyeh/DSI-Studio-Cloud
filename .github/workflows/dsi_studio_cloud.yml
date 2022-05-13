@@ -239,13 +239,11 @@ jobs:
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=ana --source=${{ matrix.files }} --atlas=${{ github.event.inputs.atlas }}
           zip ${{ github.event.inputs.id }}_region_analysis.zip *.txt
-      - name: Create Release
-        uses: ncipollo/release-action@v1.10.0
+      - name: Save Result
+        uses: actions/upload-artifact@v2.2.4
         with:
-          allowUpdates: true
-          artifacts: ${{ github.event.inputs.id }}_region_analysis.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
-          tag: ${{ github.event.inputs.id }}
+          name: ${{ github.event.inputs.id }}_region_analysis
+          path: ./*.txt 
           
   automatic_fiber_tracking:
     name: Automatic Fiber Tracking
@@ -270,14 +268,14 @@ jobs:
           mv ./**/*.tt.gz .
           mv ./**/*.stat.txt .
           zip ${{ github.event.inputs.id }}_autotrack.zip *.tt.gz *.stat.txt
-      - name: Create Release
-        uses: ncipollo/release-action@v1.10.0
+      - name: Save Result
+        uses: actions/upload-artifact@v2.2.4
         with:
-          allowUpdates: true
-          artifacts: ${{ github.event.inputs.id }}_autotrack.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
-          tag: ${{ github.event.inputs.id }}
-          
+          name: ${{ github.event.inputs.id }}_autotrack
+          path: |
+            ./*.tt.gz 
+            ./*.stat.txt 
+            
   connectivity_matrix:
     name: Connectivity Matrix
     if: github.event.inputs.connectivity_matrix == 'true'
@@ -299,11 +297,11 @@ jobs:
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=trk --source=${{ matrix.files }} --fiber_count=1000000 --output=no_file --connectivity=${{ github.event.inputs.atlas }}          
           zip ${{ github.event.inputs.id }}_connectivity_matrix.zip *.mat *.txt
-      - name: Create Release
-        uses: ncipollo/release-action@v1.10.0
+      - name: Save Result
+        uses: actions/upload-artifact@v2.2.4
         with:
-          allowUpdates: true
-          artifacts: ${{ github.event.inputs.id }}_connectivity_matrix.zip
-          name: "${{ fromjson(needs.reconstruction.outputs.dataset_description).Name }}"
-          tag: ${{ github.event.inputs.id }}
+          name: ${{ github.event.inputs.id }}_connectivity_matrix
+          path: |
+            ./*.mat
+            ./*.txt
     
