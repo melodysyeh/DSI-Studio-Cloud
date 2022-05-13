@@ -62,7 +62,9 @@ jobs:
           mv ./**/*src.gz .
           FIB_LIST=$(ls *.src.gz | jq -R -s -c 'split("\n")[:-1]')
           echo ::set-output name=files::${FIB_LIST}    
-        
+      - name: Failed Report
+        if: failure() 
+        run: cat ./${{ github.event.inputs.id }}/log.txt      
       - name: Save SRC files
         if: github.event.inputs.eddy == 'true' || github.event.inputs.acpc == 'true'
         uses: actions/upload-artifact@v2.2.4
