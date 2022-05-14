@@ -103,13 +103,13 @@ jobs:
           
   preprocessing:
     name: Preprocessing
+    continue-on-error: true
     needs: download_data
     outputs:
       dataset_description: ${{ needs.download_data.outputs.dataset_description }}    
     strategy:
       matrix:
         files: ${{ fromjson(needs.download_data.outputs.files) }}
-      fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - name: Prepare Raw SRC
@@ -222,12 +222,12 @@ jobs:
           
   region_analysis:
     name: Region Analysis
+    continue-on-error: true
     if: github.event.inputs.region_analysis == 'true'
     needs: reconstruction
     strategy:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
-      fail-fast: false
     outputs:
       dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}      
     runs-on: ubuntu-latest
@@ -250,12 +250,12 @@ jobs:
           
   automatic_fiber_tracking:
     name: Automatic Fiber Tracking
+    continue-on-error: true
     if: github.event.inputs.autotrack == 'true'
     needs: reconstruction
     strategy:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
-      fail-fast: false
     outputs:
       dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}            
     runs-on: ubuntu-latest
@@ -282,12 +282,12 @@ jobs:
             
   connectivity_matrix:
     name: Connectivity Matrix
+    continue-on-error: true
     if: github.event.inputs.connectivity_matrix == 'true'
     needs: reconstruction
     strategy:
       matrix:
         files: ${{ fromjson(needs.reconstruction.outputs.files) }}
-      fail-fast: false
     outputs:
       dataset_description: ${{ needs.reconstruction.outputs.dataset_description }}            
     runs-on: ubuntu-latest
