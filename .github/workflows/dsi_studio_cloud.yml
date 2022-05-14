@@ -270,8 +270,8 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
-          mv ./**/*.tt.gz .
-          mv ./**/*.stat.txt .
+          mv ./**/*.tt.gz . 2>/dev/null
+          mv ./**/*.stat.txt . 2>/dev/null
       - name: Save Result
         uses: actions/upload-artifact@v2.2.4
         with:
