@@ -32,7 +32,7 @@ on:
         required: false
       tract:
         description: 'Options: Tracts of Interest'
-        default: 'Corticospinal_Tract_L,Uncinate_Fasciculus_R'
+        default: 'Arcuate_Fasciculus_L,Forceps_Major'
         required: false
       
 jobs:    
@@ -251,7 +251,7 @@ jobs:
   automatic_fiber_tracking:
     name: Automatic Fiber Tracking
     continue-on-error: true
-    if: github.event.inputs.autotrack == 'true'
+    if: github.event.inputs.autotrack == 'true' && github.event.inputs.tract != ""
     needs: reconstruction
     strategy:
       matrix:
@@ -270,8 +270,8 @@ jobs:
         run: |
           curl -sSLO "https://github.com/frankyeh/DSI-Studio/releases/download/2021.12.03/dsi_studio_ubuntu_2004.zip" && unzip -q \*.zip
           ./dsi-studio/dsi_studio --action=atk --source=${{ matrix.files }} --track_id=${{ github.event.inputs.tract }}
-          mv ./**/*.tt.gz . 2>/dev/null
-          mv ./**/*.stat.txt . 2>/dev/null
+          mv ./**/*.tt.gz . || true
+          mv ./**/*.stat.txt . || true
       - name: Save Result
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -283,7 +283,7 @@ jobs:
   connectivity_matrix:
     name: Connectivity Matrix
     continue-on-error: true
-    if: github.event.inputs.connectivity_matrix == 'true'
+    if: github.event.inputs.connectivity_matrix == 'true' && github.event.inputs.atlas != ""
     needs: reconstruction
     strategy:
       matrix:
@@ -312,7 +312,7 @@ jobs:
     
   region_analysis_output:
     name: Save Region Analysis Results
-    if: github.event.inputs.region_analysis == 'true'
+    if: github.event.inputs.region_analysis == 'true' && github.event.inputs.atlas != ""
     needs: region_analysis
     runs-on: ubuntu-latest
     steps:
