@@ -251,7 +251,7 @@ jobs:
   automatic_fiber_tracking:
     name: Automatic Fiber Tracking
     continue-on-error: true
-    if: github.event.inputs.autotrack == 'true' && github.event.inputs.tract != ""
+    if: github.event.inputs.autotrack == 'true'
     needs: reconstruction
     strategy:
       matrix:
@@ -283,7 +283,7 @@ jobs:
   connectivity_matrix:
     name: Connectivity Matrix
     continue-on-error: true
-    if: github.event.inputs.connectivity_matrix == 'true' && github.event.inputs.atlas != ""
+    if: github.event.inputs.connectivity_matrix == 'true'
     needs: reconstruction
     strategy:
       matrix:
@@ -312,7 +312,7 @@ jobs:
     
   region_analysis_output:
     name: Save Region Analysis Results
-    if: github.event.inputs.region_analysis == 'true' && github.event.inputs.atlas != ""
+    if: github.event.inputs.region_analysis == 'true'
     needs: region_analysis
     runs-on: ubuntu-latest
     steps:
